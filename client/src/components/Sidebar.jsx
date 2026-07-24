@@ -9,8 +9,8 @@ import { useAuth } from '../context/AuthContext';
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/patients', label: 'Patients', icon: Users },
-  { path: '/ai-assistant', label: 'AI Assistant', icon: Bot },
-  { path: '/reports', label: 'Medical Reports', icon: FileText },
+  { path: '/prescription-generator', label: 'Prescription Generator', icon: FileText },
+  { path: '/reports', label: 'Medical Reports', icon: ClipboardList },
   { path: '/appointments', label: 'Appointments', icon: Calendar },
   { path: '/hospitals', label: 'Hospitals', icon: Building2 },
   { path: '/doctors', label: 'Doctors', icon: Stethoscope },

@@ -11,29 +11,29 @@ import Dashboard from './pages/Dashboard';
 import PatientsPage from './pages/PatientsPage';
 import PatientDetail from './pages/PatientDetail';
 import PatientPortal from './pages/PatientPortal';
-import AIAssistant from './pages/AIAssistant';
+import PrescriptionGeneratorPage from './pages/PrescriptionGeneratorPage';
 import ReportsPage from './pages/ReportsPage';
-import PrescriptionsPage from './pages/PrescriptionsPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import HospitalsPage from './pages/HospitalsPage';
 import DoctorsPage from './pages/DoctorsPage';
 import MedicinesPage from './pages/MedicinesPage';
 import VaccinationsPage from './pages/VaccinationsPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPortal from './pages/AdminPortal';
 
 const pageTitles = {
   '/dashboard': 'Dashboard',
   '/patients': 'Patient Management',
   '/patient-portal': 'Patient Access Portal',
-  '/ai-assistant': 'AI Health Assistant',
+  '/prescription-generator': 'Prescription Generator',
   '/reports': 'Medical Reports',
-  '/prescriptions': 'Prescriptions',
   '/appointments': 'Appointments',
   '/hospitals': 'Nearby Hospitals',
   '/doctors': 'Doctor Directory',
   '/medicines': 'Medicine Inventory',
   '/vaccinations': 'Vaccination Tracker',
   '/profile': 'My Profile',
+  '/admin': 'Admin Control Center'
 };
 
 function ProtectedRoute({ children }) {
@@ -68,7 +68,7 @@ function AppLayout({ children }) {
 function AppRoutes() {
   const { user } = useAuth();
 
-  const defaultRoute = user?.role === 'patient' ? '/patient-portal' : '/dashboard';
+  const defaultRoute = user?.role === 'admin' ? '/admin' : user?.role === 'patient' ? '/patient-portal' : '/dashboard';
 
   return (
     <Routes>
@@ -76,11 +76,12 @@ function AppRoutes() {
       <Route path="/register" element={user ? <Navigate to={defaultRoute} /> : <RegisterPage />} />
       <Route path="/" element={<Navigate to={defaultRoute} />} />
 
+      <Route path="/admin" element={<ProtectedRoute><AdminPortal /></ProtectedRoute>} />
       <Route path="/patient-portal" element={<ProtectedRoute><PatientPortal /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
       <Route path="/patients" element={<ProtectedRoute><AppLayout><PatientsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/patients/:id" element={<ProtectedRoute><AppLayout><PatientDetail /></AppLayout></ProtectedRoute>} />
-      <Route path="/ai-assistant" element={<ProtectedRoute><AppLayout><AIAssistant /></AppLayout></ProtectedRoute>} />
+      <Route path="/prescription-generator" element={<ProtectedRoute><AppLayout><PrescriptionGeneratorPage /></AppLayout></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute><AppLayout><ReportsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/appointments" element={<ProtectedRoute><AppLayout><AppointmentsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/hospitals" element={<ProtectedRoute><AppLayout><HospitalsPage /></AppLayout></ProtectedRoute>} />

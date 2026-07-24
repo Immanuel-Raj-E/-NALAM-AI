@@ -3,8 +3,8 @@ import { patientAPI, healthRecordAPI, prescriptionAPI, appointmentAPI, vaccinati
 import { useAuth } from '../context/AuthContext';
 import {
   Heart, User, Activity, Pill, Calendar, Syringe, FileText, Phone,
-  LogOut, ShieldAlert, CheckCircle2, Clock, MapPin,
-  Stethoscope, Settings, Plus, Check, LayoutDashboard, HeartPulse, UserCheck
+  LogOut, ShieldAlert, Clock,
+  Plus, Check, LayoutDashboard, HeartPulse, UserCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,9 +35,6 @@ export default function PatientPortal() {
 
   // Medicine Reminders Checklist
   const [takenMeds, setTakenMeds] = useState({});
-
-  // Settings State
-  const [settings, setSettings] = useState({ smsAlerts: true, language: 'English', theme: 'Light', emergencyAlerts: true });
 
   // Fetch initial patient profiles & reference data
   useEffect(() => {
@@ -116,10 +113,7 @@ export default function PatientPortal() {
     bloodGroup: 'O+',
     village: user?.village || 'Mathur',
     district: user?.district || 'Krishnagiri',
-    phone: user?.phone || '9876501001',
-    riskLevel: 'Medium',
-    medicalConditions: ['Anaemia', 'Pregnancy'],
-    allergies: ['Penicillin']
+    phone: user?.phone || '9876501001'
   };
 
   return (
@@ -239,7 +233,6 @@ export default function PatientPortal() {
             { id: 'reminders', label: 'Medicine Reminders', icon: Pill },
             { id: 'asha', label: 'ASHA Worker', icon: UserCheck },
             { id: 'profile', label: 'My Profile', icon: User },
-            { id: 'settings', label: 'Settings', icon: Settings },
           ].map(item => {
             const Icon = item.icon;
             return (
@@ -278,7 +271,7 @@ export default function PatientPortal() {
           {/* 1. DASHBOARD TAB */}
           {activeTab === 'dashboard' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {/* Header Banner */}
+              {/* Header Banner without Risk Profile Tag */}
               <div className="card" style={{
                 padding: 24, background: '#16a34a',
                 color: 'white', borderRadius: 16
@@ -293,9 +286,6 @@ export default function PatientPortal() {
                       {currentPatient.village}, {currentPatient.district}
                     </div>
                   </div>
-                  <span className="badge badge-green" style={{ fontSize: 13, padding: '6px 14px', background: 'white', color: '#16a34a', fontWeight: 700 }}>
-                    {currentPatient.riskLevel} Risk Profile
-                  </span>
                 </div>
               </div>
 
@@ -318,55 +308,27 @@ export default function PatientPortal() {
                   <div><div style={{ fontSize: 24, fontWeight: 800 }}>{vaccinations.filter(v => v.status === 'Completed').length} / {vaccinations.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Vaccines Done</div></div>
                 </div>
               </div>
-
-              {/* Summary Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                <div className="card" style={{ padding: 20 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', marginBottom: 12 }}>Medical Conditions & Allergies</h3>
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Conditions</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {currentPatient.medicalConditions?.map((c, i) => <span key={i} className="badge badge-blue">{c}</span>)}
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Allergies</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {currentPatient.allergies?.map((a, i) => <span key={i} className="badge badge-red">{a}</span>)}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card" style={{ padding: 20, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#166534', marginBottom: 10 }}>Personal Health Advice</h3>
-                  <div style={{ fontSize: 13, color: '#14532d', lineHeight: 1.7 }}>
-                    <p>• Take Iron Folic Acid tablet daily after dinner with citrus fruit juice.</p>
-                    <p>• Drink at least 3 Litres of clean water daily.</p>
-                    <p>• Contact ASHA Worker Meena Kumari (9876543210) for assistance.</p>
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
-          {/* 2. BOOK APPOINTMENT TAB */}
+          {/* 2. BOOK APPOINTMENT TAB (CENTER ALIGNED) */}
           {activeTab === 'book-appointment' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div>
-                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Book Doctor Appointment</h2>
-                <p style={{ fontSize: 13, color: '#64748b' }}>Schedule a consultation at your nearest PHC or hospital</p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, width: '100%', maxWidth: 640, margin: '0 auto' }}>
+              <div style={{ textAlign: 'center' }}>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Book Doctor Appointment</h2>
+                <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Schedule a consultation at your nearest PHC or hospital</p>
               </div>
 
               {bookingSuccess && (
-                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: 14, borderRadius: 10, fontSize: 14, fontWeight: 600 }}>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: 14, borderRadius: 10, fontSize: 14, fontWeight: 600, width: '100%', textAlign: 'center' }}>
                   Appointment booked successfully! Your clinic has been notified.
                 </div>
               )}
 
-              <div className="card" style={{ padding: 24, maxWidth: 600 }}>
+              <div className="card" style={{ padding: 28, width: '100%' }}>
                 <form onSubmit={handleBookAppointment} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div className="form-group">
-                    <label className="form-label">Select Hospital / PHC</label>
+                    <label className="form-label" style={{ textAlign: 'left' }}>Select Hospital / PHC</label>
                     <select
                       className="form-select"
                       value={bookingForm.hospitalName}
@@ -380,7 +342,7 @@ export default function PatientPortal() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Select Doctor / Specialty</label>
+                    <label className="form-label" style={{ textAlign: 'left' }}>Select Doctor / Specialty</label>
                     <select
                       className="form-select"
                       value={bookingForm.doctorName}
@@ -395,7 +357,7 @@ export default function PatientPortal() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <div className="form-group">
-                      <label className="form-label">Date</label>
+                      <label className="form-label" style={{ textAlign: 'left' }}>Date</label>
                       <input
                         type="date"
                         className="form-input"
@@ -406,7 +368,7 @@ export default function PatientPortal() {
                     </div>
 
                     <div className="form-group">
-                      <label className="form-label">Time Slot</label>
+                      <label className="form-label" style={{ textAlign: 'left' }}>Time Slot</label>
                       <select
                         className="form-select"
                         value={bookingForm.appointmentTime}
@@ -421,7 +383,7 @@ export default function PatientPortal() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Reason for Visit</label>
+                    <label className="form-label" style={{ textAlign: 'left' }}>Reason for Visit</label>
                     <textarea
                       className="form-input"
                       rows={3}
@@ -431,7 +393,7 @@ export default function PatientPortal() {
                     />
                   </div>
 
-                  <button type="submit" className="btn-primary" style={{ padding: '12px', justifyContent: 'center', fontSize: 14 }}>
+                  <button type="submit" className="btn-primary" style={{ padding: '12px', justifyContent: 'center', fontSize: 14, marginTop: 6 }}>
                     <Calendar size={16} /> Confirm Appointment
                   </button>
                 </form>
@@ -608,45 +570,6 @@ export default function PatientPortal() {
                   <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>BLOOD GROUP</div><div style={{ fontSize: 14, fontWeight: 600, color: '#16a34a' }}>{currentPatient.bloodGroup}</div></div>
                   <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>PHONE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{currentPatient.phone}</div></div>
                   <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>VILLAGE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{currentPatient.village}</div></div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 9. SETTINGS TAB */}
-          {activeTab === 'settings' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Settings & Preferences</h2>
-              <div className="card" style={{ padding: 24, maxWidth: 500 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>SMS Medicine Reminders</div>
-                      <div style={{ fontSize: 12, color: '#64748b' }}>Receive daily dose alerts</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={settings.smsAlerts}
-                      onChange={e => setSettings({ ...settings, smsAlerts: e.target.checked })}
-                      style={{ width: 18, height: 18, cursor: 'pointer' }}
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>Language</div>
-                      <div style={{ fontSize: 12, color: '#64748b' }}>Portal display language</div>
-                    </div>
-                    <select
-                      className="form-select"
-                      style={{ width: 120 }}
-                      value={settings.language}
-                      onChange={e => setSettings({ ...settings, language: e.target.value })}
-                    >
-                      <option value="English">English</option>
-                      <option value="Tamil">Tamil</option>
-                    </select>
-                  </div>
                 </div>
               </div>
             </div>

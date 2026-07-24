@@ -15,8 +15,14 @@ const Prescription = require('../models/Prescription');
 const MedicalReport = require('../models/MedicalReport');
 
 const connectDB = async () => {
-  await mongoose.connect(mongoUri);
-  console.log('✅ MongoDB Connected for seeding...');
+  try {
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+    console.log('✅ MongoDB Connected for seeding...');
+  } catch (error) {
+    console.log(`⚠️ Atlas connection failed: ${error.message}. Seeding to local MongoDB...`);
+    await mongoose.connect('mongodb://localhost:27017/nalam_ai');
+    console.log('✅ Local MongoDB Connected for seeding...');
+  }
 };
 
 const seedData = async () => {
@@ -36,6 +42,19 @@ const seedData = async () => {
   ]);
   console.log('🗑️  Cleared existing database collections');
 
+  // Create System Admin
+  await User.create({
+    name: 'System Admin (Nalam)',
+    email: 'admin@nalamhealth.in',
+    password: 'admin123',
+    role: 'admin',
+    phone: '9998887770',
+    village: 'Krishnagiri HQ',
+    district: 'Krishnagiri',
+    state: 'Tamil Nadu',
+  });
+  console.log('System Admin created');
+
   // Create ASHA Worker
   const ashaWorker = await User.create({
     name: 'Meena Kumari',
@@ -47,7 +66,7 @@ const seedData = async () => {
     district: 'Krishnagiri',
     state: 'Tamil Nadu',
   });
-  console.log('👩 ASHA Worker created');
+  console.log('ASHA Worker created');
 
   // Create Patient Accounts for Login
   await User.create([

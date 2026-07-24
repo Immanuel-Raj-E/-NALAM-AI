@@ -5,7 +5,7 @@ const Patient = require('../models/Patient');
 const getPatients = async (req, res, next) => {
   try {
     const { search, riskLevel, village, page = 1, limit = 20 } = req.query;
-    const query = req.user.role === 'patient' ? { isActive: true } : { ashaWorker: req.user._id, isActive: true };
+    const query = (req.user.role === 'patient' || req.user.role === 'admin') ? { isActive: true } : { ashaWorker: req.user._id, isActive: true };
 
     if (riskLevel) query.riskLevel = riskLevel;
     if (village) query.village = new RegExp(village, 'i');
@@ -40,7 +40,7 @@ const getPatients = async (req, res, next) => {
 // @route   GET /api/patients/:id
 const getPatient = async (req, res, next) => {
   try {
-    const query = req.user.role === 'patient' ? { _id: req.params.id } : { _id: req.params.id, ashaWorker: req.user._id };
+    const query = (req.user.role === 'patient' || req.user.role === 'admin') ? { _id: req.params.id } : { _id: req.params.id, ashaWorker: req.user._id };
     const patient = await Patient.findOne(query);
     if (!patient) return res.status(404).json({ success: false, message: 'Patient not found' });
     res.json({ success: true, data: patient });

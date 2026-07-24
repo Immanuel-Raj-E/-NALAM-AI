@@ -122,9 +122,7 @@ export default function MedicinesPage() {
                     <th>Medicine</th>
                     <th>Category</th>
                     <th>Stock</th>
-                    <th>Unit</th>
                     <th>Expiry Date</th>
-                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -145,18 +143,9 @@ export default function MedicinesPage() {
                           <div style={{ fontWeight: 700, fontSize: 16, color: low ? '#ef4444' : '#16a34a' }}>{med.quantity}</div>
                           <div style={{ fontSize: 11, color: '#94a3b8' }}>Min: {med.lowStockThreshold}</div>
                         </td>
-                        <td style={{ fontSize: 13 }}>{med.unit}</td>
                         <td>
                           <div style={{ fontSize: 13, color: expired ? '#ef4444' : expiring ? '#f59e0b' : '#1e293b', fontWeight: expired || expiring ? 700 : 400 }}>
                             {med.expiryDate ? new Date(med.expiryDate).toLocaleDateString('en-IN') : '—'}
-                          </div>
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                            {expired && <span className="badge badge-red">Expired</span>}
-                            {!expired && expiring && <span className="badge badge-yellow">Expiring Soon</span>}
-                            {low && <span className="badge badge-orange">Low Stock</span>}
-                            {!low && !expired && !expiring && <span className="badge badge-green">OK</span>}
                           </div>
                         </td>
                         <td>
