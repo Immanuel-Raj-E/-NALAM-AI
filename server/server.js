@@ -26,6 +26,10 @@ const app = express();
 
 // Connect to MongoDB
 connectDB();
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // Security middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
