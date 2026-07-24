@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../..', '.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/nalam_ai';
 
 const mongoose = require('mongoose');
