@@ -1,4 +1,5 @@
 const Prescription = require('../models/Prescription');
+const Medicine = require('../models/Medicine');
 const { extractTextFromFile } = require('../services/ocrService');
 
 const getPrescriptions = async (req, res, next) => {
@@ -27,7 +28,7 @@ const getPrescription = async (req, res, next) => {
 
 const createPrescription = async (req, res, next) => {
   try {
-    const { patient, doctorName, hospitalName, prescriptionDate, notes } = req.body;
+    const { patient, doctorName, hospitalName, prescriptionDate, notes, extractedMedicines } = req.body;
     let fileUrl = null;
     let fileName = null;
     let ocrText = '';
@@ -50,12 +51,62 @@ const createPrescription = async (req, res, next) => {
       hospitalName,
       prescriptionDate,
       notes,
+      extractedMedicines: extractedMedicines || [],
       fileUrl,
       fileName,
       ocrText,
     });
 
-    res.status(201).json({ success: true, message: 'Prescription uploaded', data: prescription });
+    // ==================== AUTOMATIC STOCK DEDUCTION IN DATABASE ====================
+    if (extractedMedicines && Array.isArray(extractedMedicines) && extractedMedicines.length > 0) {
+      for (const item of extractedMedicines) {
+        try {
+          let med = null;
+          if (item.medicineId) {
+            med = await Medicine.findById(item.medicineId);
+          }
+          if (!med && item.name) {
+            med = await Medicine.findOne({
+              name: new RegExp(item.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+              ashaWorker: req.user._id
+            });
+          }
+
+          if (med) {
+            // Deduct stock quantity by 1 for each prescribed item
+            med.quantity = Math.max(0, med.quantity - 1);
+            await med.save();
+            console.log(`📉 Stock reduced for ${med.name}: new quantity is ${med.quantity}`);
+
+            // ==================== n8n LOW STOCK WEBHOOK TRIGGER ====================
+            if (med.quantity <= med.lowStockThreshold) {
+              try {
+                const webhookUrl = process.env.N8N_WEBHOOK_URL || 'https://immanuel123.app.n8n.cloud/webhook/low-stock-alert';
+                await fetch(webhookUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    medicineName: med.name,
+                    availableQuantity: med.quantity,
+                    threshold: med.lowStockThreshold,
+                    unit: med.unit || 'Tablets',
+                    email: process.env.ALERT_EMAIL || 'imman8046@gmail.com'
+                  })
+                });
+                console.log(`📡 n8n Low Stock Webhook triggered for medicine: ${med.name}`);
+              } catch (webhookErr) {
+                console.error('⚠️ n8n Webhook Error (non-blocking):', webhookErr.message);
+              }
+            }
+          }
+        } catch (stockErr) {
+          console.error(`⚠️ Failed to update stock for ${item.name}:`, stockErr.message);
+        }
+      }
+    }
+    // ==============================================================================
+
+    res.status(201).json({ success: true, message: 'Prescription created and medicine stock reduced', data: prescription });
   } catch (error) {
     next(error);
   }

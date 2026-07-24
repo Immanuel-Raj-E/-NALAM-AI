@@ -93,4 +93,58 @@ const getLowStockCount = async (req, res, next) => {
   }
 };
 
-module.exports = { getMedicines, getMedicine, createMedicine, updateMedicine, deleteMedicine, getLowStockCount };
+const dispenseMedicine = async (req, res, next) => {
+  try {
+    const { dispensedQuantity } = req.body;
+
+    if (dispensedQuantity === undefined || typeof dispensedQuantity !== 'number' || dispensedQuantity <= 0) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid dispensed quantity' });
+    }
+
+    const med = await Medicine.findOne({ _id: req.params.id, ashaWorker: req.user._id });
+    if (!med) {
+      return res.status(404).json({ success: false, message: 'Medicine not found' });
+    }
+
+    if (med.quantity < dispensedQuantity) {
+      return res.status(400).json({ success: false, message: 'Insufficient stock' });
+    }
+
+    // Deduct stock
+    med.quantity -= dispensedQuantity;
+    await med.save();
+
+    // ==================== START n8n WEBHOOK INTEGRATION ====================
+    // Webhook is triggered after successfully updating the medicine quantity in MongoDB.
+    // Wrapped in a separate try/catch block so that webhook failures never affect medicine dispensing.
+    try {
+      const webhookUrl = process.env.N8N_WEBHOOK_URL;
+      if (webhookUrl) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            medicineId: med._id.toString(),
+            medicineName: med.name,
+            quantity: med.quantity,
+            lowStockThreshold: med.lowStockThreshold,
+            unit: med.unit || 'Tablets',
+            dispensedQuantity: dispensedQuantity,
+            updatedBy: req.user.name,
+            timestamp: new Date().toISOString()
+          })
+        });
+        console.log(`📡 n8n Real-time Stock Webhook triggered for medicine: ${med.name}`);
+      }
+    } catch (webhookErr) {
+      console.error('⚠️ n8n Webhook Error (non-blocking):', webhookErr.message);
+    }
+    // ===================== END n8n WEBHOOK INTEGRATION =====================
+
+    res.json({ success: true, message: 'Medicine dispensed', data: med });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getMedicines, getMedicine, createMedicine, updateMedicine, deleteMedicine, getLowStockCount, dispenseMedicine };

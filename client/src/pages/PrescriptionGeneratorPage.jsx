@@ -80,6 +80,7 @@ export default function PrescriptionGeneratorPage() {
         hospitalName,
         prescriptionDate: new Date(),
         notes: rxNotes,
+        extractedMedicines: prescriptionMedicines,
         ocrText: JSON.stringify({ diagnosisDescription, prescriptionMedicines }, null, 2),
       });
 

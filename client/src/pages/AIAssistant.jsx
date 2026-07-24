@@ -105,6 +105,7 @@ export default function AIAssistant() {
         hospitalName: `${p?.village || 'Mathur'} PHC`,
         prescriptionDate: new Date(),
         notes: `AI Generated Rx for ${generatedRx.workingDiagnosis}. Medicines: ${generatedRx.recommendedMedicines.map(m => m.name).join(', ')}`,
+        extractedMedicines: generatedRx.recommendedMedicines,
         ocrText: JSON.stringify(generatedRx, null, 2),
       });
       setSavedRx(true);
