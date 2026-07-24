@@ -247,37 +247,47 @@ const generateAIPrescription = ({ patientName, patientAge, patientGender, sympto
   const medicines = [];
   const precautions = new Set();
 
-  if (lowerSymptoms.some(s => s.includes('fever'))) {
-    medicines.push({ name: 'Paracetamol 500mg', dosage: '1 tablet', frequency: 'Three times a day (TID) after food', duration: '3-5 days', instructions: 'Take with plenty of water. Do not exceed 4 tablets in 24 hours.' });
-    precautions.add('Rest adequately and stay well hydrated.');
-    precautions.add('Monitor body temperature every 4 hours.');
+  if (lowerSymptoms.some(s => s.includes('fever') || s.includes('temperature') || s.includes('hot'))) {
+    medicines.push({ name: 'Paracetamol 500mg', dosage: '10 Tablets', frequency: 'Three times a day (TID) after food', duration: '3-5 days', instructions: 'Take with plenty of water. Do not exceed 4 tablets in 24 hours.' });
+    precautions.add('Rest adequately and stay well hydrated with boiled water.');
+    precautions.add('Monitor body temperature every 4 hours using a digital thermometer.');
   }
 
-  if (lowerSymptoms.some(s => s.includes('cough') || s.includes('cold'))) {
-    medicines.push({ name: 'Amoxicillin 250mg / Cetirizine 10mg', dosage: '1 tablet', frequency: 'Twice daily (BID)', duration: '5 days', instructions: 'Complete full course if antibiotic prescribed by MO.' });
-    medicines.push({ name: 'Cough Syrup (Kufma/Benadryl)', dosage: '10 ml', frequency: 'Three times daily', duration: '5 days', instructions: 'Take warm water after intake.' });
-    precautions.add('Steam inhalation twice daily.');
-    precautions.add('Avoid cold items, ice water, and dust exposure.');
+  if (lowerSymptoms.some(s => s.includes('cough') || s.includes('cold') || s.includes('sore throat') || s.includes('runny nose'))) {
+    medicines.push({ name: 'Amoxicillin 250mg', dosage: '10 Capsules', frequency: 'Twice daily (BID)', duration: '5 days', instructions: 'Complete full 5-day course as prescribed by medical officer.' });
+    medicines.push({ name: 'Cetirizine 10mg', dosage: '5 Tablets', frequency: 'Once daily at bedtime (OD)', duration: '5 days', instructions: 'May cause mild drowsiness.' });
+    precautions.add('Perform warm saltwater gargles and steam inhalation twice daily.');
+    precautions.add('Avoid cold items, refrigerated water, and dust exposure.');
   }
 
-  if (lowerSymptoms.some(s => s.includes('pain') || s.includes('headache') || s.includes('bodyache'))) {
-    medicines.push({ name: 'Ibuprofen 400mg / Paracetamol', dosage: '1 tablet', frequency: 'As needed (max 3 times/day)', duration: '3 days', instructions: 'Always take after meals to protect stomach lining.' });
+  if (lowerSymptoms.some(s => s.includes('pain') || s.includes('headache') || s.includes('bodyache') || s.includes('joint'))) {
+    medicines.push({ name: 'Ibuprofen 400mg', dosage: '6 Tablets', frequency: 'Twice daily (BID) after food', duration: '3 days', instructions: 'Always take after meals to protect stomach lining.' });
   }
 
-  if (lowerSymptoms.some(s => s.includes('diarrhea') || s.includes('vomiting'))) {
-    medicines.push({ name: 'ORS (Oral Rehydration Salts)', dosage: '1 sachet in 1 Litre water', frequency: 'Sip continuously throughout the day', duration: 'Until recovery', instructions: 'Use clean boiled and cooled water only.' });
-    medicines.push({ name: 'Zinc Tablets 20mg', dosage: '1 tablet', frequency: 'Once daily (OD)', duration: '14 days', instructions: 'Essential for pediatric and adult gut recovery.' });
+  if (lowerSymptoms.some(s => s.includes('diarrhea') || s.includes('loose stool') || s.includes('vomiting') || s.includes('dehydration'))) {
+    medicines.push({ name: 'ORS Sachets', dosage: '5 Sachets', frequency: '1 sachet mixed in 1 Litre boiled cooled water continuously', duration: '3 days', instructions: 'Use clean boiled and cooled water only.' });
+    medicines.push({ name: 'Zinc Tablets 20mg', dosage: '14 Tablets', frequency: 'Once daily (OD)', duration: '14 days', instructions: 'Essential for pediatric and adult gut mucosal recovery.' });
     precautions.add('Maintain strict hand hygiene and sanitary food practices.');
   }
 
-  if (lowerSymptoms.some(s => s.includes('anaemia') || s.includes('fatigue') || s.includes('weakness'))) {
-    medicines.push({ name: 'Iron & Folic Acid (IFA) Tablet', dosage: '1 tablet', frequency: 'Once daily after dinner', duration: '90 days', instructions: 'Do not take with tea or milk. Take with citrus fruit/lemon water.' });
+  if (lowerSymptoms.some(s => s.includes('anaemia') || s.includes('fatigue') || s.includes('weakness') || s.includes('dizziness'))) {
+    medicines.push({ name: 'Iron Folic Acid', dosage: '30 Tablets', frequency: 'Once daily after dinner', duration: '30 days', instructions: 'Do not take with tea or milk. Take with lemon water for max absorption.' });
     precautions.add('Include green leafy vegetables, jaggery, and pulses in daily diet.');
   }
 
+  if (lowerSymptoms.some(s => s.includes('skin') || s.includes('rash') || s.includes('itching') || s.includes('fungal'))) {
+    medicines.push({ name: 'Clotrimazole Cream', dosage: '1 Tube', frequency: 'Apply twice daily to affected area', duration: '7 days', instructions: 'Clean and dry affected skin before application.' });
+    precautions.add('Keep affected skin clean and dry. Avoid sharing towels or clothing.');
+  }
+
+  if (lowerSymptoms.some(s => s.includes('asthma') || s.includes('wheezing') || s.includes('breath'))) {
+    medicines.push({ name: 'Salbutamol Inhaler', dosage: '1 Inhaler', frequency: '2 puffs SOS (as needed for breathlessness)', duration: 'As needed', instructions: 'Rinse mouth with water after inhalation.' });
+    precautions.add('Avoid exposure to smoke, dust, and cold air.');
+  }
+
   if (medicines.length === 0) {
-    medicines.push({ name: 'Multivitamin & Mineral Supplement', dosage: '1 tablet', frequency: 'Once daily after breakfast', duration: '15 days', instructions: 'General health support.' });
-    medicines.push({ name: 'Paracetamol 500mg (SOS)', dosage: '1 tablet', frequency: 'Only if fever/pain occurs', duration: 'As needed', instructions: 'For symptomatic relief.' });
+    medicines.push({ name: 'Paracetamol 500mg', dosage: '10 Tablets', frequency: 'Only if fever or pain occurs (SOS)', duration: '3 days', instructions: 'Take 1 tablet after meals.' });
+    medicines.push({ name: 'ORS Sachets', dosage: '2 Sachets', frequency: 'As needed for hydration', duration: '2 days', instructions: 'Mix 1 sachet in 1 Litre water.' });
   }
 
   return {

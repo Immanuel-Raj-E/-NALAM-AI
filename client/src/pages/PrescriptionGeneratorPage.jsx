@@ -71,14 +71,15 @@ export default function PrescriptionGeneratorPage() {
     }
   };
 
-  // Add AI suggested medicine directly to Rx
+  // Add AI suggested medicine directly to Rx (matching database inventory if present)
   const addAiMedicineToRx = (suggestedMed) => {
     const match = String(suggestedMed.dosage || '10').match(/\d+/);
     const parsedQty = match ? parseInt(match[0], 10) : 10;
+    const inventoryMatch = medicines.find(m => m.name.toLowerCase().includes(suggestedMed.name.toLowerCase()) || suggestedMed.name.toLowerCase().includes(m.name.toLowerCase()));
 
     const newItem = {
-      medicineId: null,
-      name: suggestedMed.name,
+      medicineId: inventoryMatch ? inventoryMatch._id : null,
+      name: inventoryMatch ? inventoryMatch.name : suggestedMed.name,
       dosage: suggestedMed.dosage || '10 Tablets',
       quantityDeducted: parsedQty,
       frequency: suggestedMed.frequency || 'Twice daily',
