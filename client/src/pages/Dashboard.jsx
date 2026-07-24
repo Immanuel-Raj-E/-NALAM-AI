@@ -65,7 +65,7 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b' }}>
-            Namaste, {user?.name?.split(' ')[0]}! 🙏
+            Namaste, {user?.name?.split(' ')[0]}!
           </h2>
           <p style={{ color: '#64748b', fontSize: 14, marginTop: 2 }}>
             Here's your healthcare overview for today

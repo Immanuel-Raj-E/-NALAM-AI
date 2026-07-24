@@ -74,7 +74,7 @@ export default function Navbar({ onMenuClick, title }) {
           zIndex: 1000, border: '1px solid #e2e8f0', animation: 'fadeIn 0.2s ease'
         }}>
           <div style={{ fontWeight: 700, fontSize: 16, color: '#dc2626', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            🚨 Emergency Contacts
+            Emergency Contacts
           </div>
           {[
             { label: 'Ambulance', number: '108', color: '#ef4444' },

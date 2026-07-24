@@ -175,7 +175,7 @@ export default function LoginPage() {
           {/* Demo credentials box */}
           <div style={{ background: roleTab === 'asha_worker' ? '#f0fdf4' : '#f0f9ff', border: `1px solid ${roleTab === 'asha_worker' ? '#bbf7d0' : '#bae6fd'}`, borderRadius: 10, padding: '12px 14px', marginTop: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: roleTab === 'asha_worker' ? '#16a34a' : '#0284c7', marginBottom: 4 }}>
-              🔑 Demo Credentials ({roleTab === 'asha_worker' ? 'ASHA Worker' : 'Patient Profile'})
+              Demo Credentials ({roleTab === 'asha_worker' ? 'ASHA Worker' : 'Patient Profile'})
             </div>
             <div style={{ fontSize: 12, color: '#334155' }}>Email: <strong>{roleTab === 'asha_worker' ? 'meena@nalamhealth.in' : 'lakshmi@nalamhealth.in'}</strong></div>
             <div style={{ fontSize: 12, color: '#334155' }}>Password: <strong>{roleTab === 'asha_worker' ? 'asha1234' : 'patient123'}</strong></div>

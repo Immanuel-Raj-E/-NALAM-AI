@@ -3,8 +3,8 @@ import { patientAPI, healthRecordAPI, prescriptionAPI, appointmentAPI, vaccinati
 import { useAuth } from '../context/AuthContext';
 import {
   Heart, User, Activity, Pill, Calendar, Syringe, FileText, Phone,
-  LogOut, Bot, Send, CheckCircle2, Clock, AlertTriangle, ShieldCheck, Sparkles, MapPin,
-  Stethoscope, Settings, Bell, ChevronRight, Plus, Check, Search, Building2
+  LogOut, ShieldAlert, CheckCircle2, Clock, MapPin,
+  Stethoscope, Settings, Plus, Check, LayoutDashboard, HeartPulse, UserCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ export default function PatientPortal() {
   const [loading, setLoading] = useState(true);
 
   // Active Navigation Tab
-  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard | book-appointment | my-appointments | health-records | prescriptions | reminders | asha | profile | settings
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   // Emergency SOS Modal
   const [showSOS, setShowSOS] = useState(false);
@@ -109,7 +109,6 @@ export default function PatientPortal() {
     setTakenMeds(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Fallback patient object if database lookup returns empty
   const currentPatient = patient || {
     name: user?.name || 'Lakshmi Devi',
     age: 28,
@@ -125,66 +124,62 @@ export default function PatientPortal() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#1e293b', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Header Bar with Profile Button & Emergency SOS at corner */}
+      {/* Top Header Bar */}
       <header style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f4c25 100%)',
+        background: '#0f172a',
         color: 'white', padding: '14px 28px',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+        position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #334155'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 12,
-            background: 'linear-gradient(135deg, #16a34a, #22c55e)',
+            width: 38, height: 38, borderRadius: 10,
+            background: '#16a34a',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <Heart size={22} color="white" fill="white" />
+            <Heart size={20} color="white" fill="white" />
           </div>
           <div>
-            <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-0.5px' }}>NALAM AI · Patient Portal</div>
-            <div style={{ fontSize: 11, color: '#4ade80', fontWeight: 600 }}>Rural Primary Healthcare Services</div>
+            <div style={{ fontSize: 18, fontWeight: 700 }}>NALAM AI Patient Portal</div>
+            <div style={{ fontSize: 11, color: '#94a3b8' }}>Rural Healthcare Services</div>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Emergency SOS Corner Button */}
+          {/* Emergency SOS Button */}
           <button
             onClick={() => setShowSOS(!showSOS)}
             style={{
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-              color: 'white', border: 'none', borderRadius: 12,
-              padding: '9px 16px', fontWeight: 800, fontSize: 13,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-              boxShadow: '0 4px 14px rgba(239,68,68,0.4)',
-              animation: 'pulse-soft 2s infinite'
+              background: '#dc2626', color: 'white', border: 'none', borderRadius: 10,
+              padding: '8px 14px', fontWeight: 700, fontSize: 13,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
             }}
           >
-            <Phone size={15} /> 🚨 Emergency SOS
+            <ShieldAlert size={15} /> Emergency SOS
           </button>
 
-          {/* Profile Navigation Button (Present on Header of Every Page) */}
+          {/* Profile Navigation Button */}
           <button
             onClick={() => setActiveTab('profile')}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              background: activeTab === 'profile' ? '#16a34a' : 'rgba(255,255,255,0.12)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 12, padding: '6px 14px', cursor: 'pointer',
-              color: 'white', fontWeight: 700, fontSize: 13,
-              transition: 'all 0.2s ease'
+              background: activeTab === 'profile' ? '#16a34a' : '#1e293b',
+              border: '1px solid #334155',
+              borderRadius: 10, padding: '6px 12px', cursor: 'pointer',
+              color: 'white', fontWeight: 600, fontSize: 13
             }}
             title="Go to My Profile"
           >
-            <User size={16} color="#4ade80" />
-            <span>{currentPatient.name.split(' ')[0]} (Profile)</span>
+            <User size={15} color="#4ade80" />
+            <span>{currentPatient.name.split(' ')[0]}</span>
           </button>
 
           <button
             onClick={handleLogout}
             style={{
-              background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-              color: '#fca5a5', padding: '7px 12px', borderRadius: 10, cursor: 'pointer',
-              fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6
+              background: 'transparent', border: '1px solid #475569',
+              color: '#cbd5e1', padding: '6px 12px', borderRadius: 10, cursor: 'pointer',
+              fontWeight: 600, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6
             }}
           >
             <LogOut size={14} /> Logout
@@ -192,38 +187,35 @@ export default function PatientPortal() {
         </div>
       </header>
 
-      {/* Emergency SOS Overlay Panel */}
+      {/* Emergency SOS Overlay */}
       {showSOS && (
         <div style={{
-          position: 'fixed', top: 70, right: 28, width: 320, background: 'white',
-          borderRadius: 20, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
-          zIndex: 1000, border: '2px solid #fecaca', animation: 'fadeIn 0.2s ease'
+          position: 'fixed', top: 68, right: 28, width: 320, background: 'white',
+          borderRadius: 14, padding: 20, boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+          zIndex: 1000, border: '1px solid #e2e8f0'
         }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            🚨 Direct Emergency Escalation
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#dc2626', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ShieldAlert size={18} /> Emergency Helpline Numbers
           </div>
-          <p style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
-            Click any number to immediately place an emergency call:
-          </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
-              { label: '🚑 Free Medical Ambulance', num: '108', color: '#ef4444' },
-              { label: '📞 National Emergency Response', num: '112', color: '#dc2626' },
-              { label: '👩‍⚕️ ASHA Health Line', num: '104', color: '#2563eb' },
-              { label: '👶 Child Emergency Helpline', num: '1098', color: '#7c3aed' },
-              { label: '📞 Assigned ASHA (Meena Kumari)', num: '9876543210', color: '#16a34a' }
+              { label: 'Ambulance Service', num: '108', color: '#dc2626' },
+              { label: 'National Emergency', num: '112', color: '#dc2626' },
+              { label: 'ASHA Helpline', num: '104', color: '#2563eb' },
+              { label: 'Child Helpline', num: '1098', color: '#7c3aed' },
+              { label: 'ASHA Worker (Meena)', num: '9876543210', color: '#16a34a' }
             ].map(item => (
               <a
                 key={item.num}
                 href={`tel:${item.num}`}
                 style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: '#fff5f5', padding: '10px 14px', borderRadius: 12,
-                  textDecoration: 'none', border: '1px solid #fee2e2'
+                  background: '#f8fafc', padding: '10px 14px', borderRadius: 10,
+                  textDecoration: 'none', border: '1px solid #e2e8f0'
                 }}
               >
-                <span style={{ fontSize: 12, color: '#475569', fontWeight: 600 }}>{item.label}</span>
-                <strong style={{ color: item.color, fontSize: 15 }}>{item.num}</strong>
+                <span style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>{item.label}</span>
+                <strong style={{ color: item.color, fontSize: 14 }}>{item.num}</strong>
               </a>
             ))}
           </div>
@@ -231,51 +223,52 @@ export default function PatientPortal() {
       )}
 
       {/* Main Layout Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', flex: 1, minHeight: 'calc(100vh - 68px)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', flex: 1, minHeight: 'calc(100vh - 68px)' }}>
         {/* Left Navigation Sidebar */}
         <aside style={{
-          background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)',
-          color: 'white', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 6
+          background: '#0f172a',
+          color: 'white', padding: '20px 14px', display: 'flex', flexDirection: 'column', gap: 4,
+          borderRight: '1px solid #1e293b'
         }}>
-          <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '0 12px 10px', letterSpacing: '0.05em' }}>
-            Patient Portal Menu
-          </div>
-
           {[
-            { id: 'dashboard', label: '🏠 Dashboard', desc: 'Overview & vitals' },
-            { id: 'book-appointment', label: '📅 Book Appointment', desc: 'Doctor & hospital visits' },
-            { id: 'my-appointments', label: '📋 My Appointments', desc: 'Scheduled consultations' },
-            { id: 'health-records', label: '❤️ Health Records', desc: 'Visits & diagnoses' },
-            { id: 'prescriptions', label: '💊 Prescriptions', desc: 'Digital Doctor Rx' },
-            { id: 'reminders', label: '⏰ Medicine Reminders', desc: 'Daily intake schedule' },
-            { id: 'asha', label: '👨‍⚕️ ASHA Worker', desc: 'Assigned Healthcare Worker' },
-            { id: 'profile', label: '👤 Profile', desc: 'Personal details' },
-            { id: 'settings', label: '⚙️ Settings', desc: 'Preferences & alerts' },
-          ].map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                padding: '12px 16px', borderRadius: 14, border: 'none', cursor: 'pointer',
-                textAlign: 'left', transition: 'all 0.2s ease',
-                background: activeTab === item.id ? 'linear-gradient(135deg, rgba(22, 163, 74, 0.35) 0%, rgba(22, 163, 74, 0.15) 100%)' : 'transparent',
-                color: activeTab === item.id ? '#4ade80' : '#cbd5e1',
-                boxShadow: activeTab === item.id ? 'inset 0 0 0 1px rgba(74, 222, 128, 0.3)' : 'none'
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 700 }}>{item.label}</div>
-              <div style={{ fontSize: 11, opacity: 0.7, marginTop: 2 }}>{item.desc}</div>
-            </button>
-          ))}
+            { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'book-appointment', label: 'Book Appointment', icon: Calendar },
+            { id: 'my-appointments', label: 'My Appointments', icon: Clock },
+            { id: 'health-records', label: 'Health Records', icon: HeartPulse },
+            { id: 'prescriptions', label: 'Prescriptions', icon: FileText },
+            { id: 'reminders', label: 'Medicine Reminders', icon: Pill },
+            { id: 'asha', label: 'ASHA Worker', icon: UserCheck },
+            { id: 'profile', label: 'My Profile', icon: User },
+            { id: 'settings', label: 'Settings', icon: Settings },
+          ].map(item => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  textAlign: 'left', transition: 'all 0.2s ease',
+                  background: activeTab === item.id ? '#16a34a' : 'transparent',
+                  color: activeTab === item.id ? 'white' : '#94a3b8',
+                  fontWeight: activeTab === item.id ? 700 : 500,
+                  fontSize: 13
+                }}
+              >
+                <Icon size={16} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
 
           {/* Assigned ASHA Summary Badge */}
-          <div style={{ marginTop: 'auto', background: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 16, border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: 11, color: '#4ade80', fontWeight: 800, textTransform: 'uppercase' }}>Assigned ASHA Worker</div>
-            <div style={{ fontSize: 14, fontWeight: 800, marginTop: 4, color: 'white' }}>Meena Kumari</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>📍 Mathur PHC</div>
-            <a href="tel:9876543210" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#4ade80', fontSize: 12, fontWeight: 700, marginTop: 8, textDecoration: 'none' }}>
-              <Phone size={12} /> Call ASHA Worker
+          <div style={{ marginTop: 'auto', background: '#1e293b', borderRadius: 12, padding: 14, border: '1px solid #334155' }}>
+            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>Assigned ASHA Worker</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2, color: 'white' }}>Meena Kumari</div>
+            <div style={{ fontSize: 12, color: '#64748b' }}>Mathur PHC</div>
+            <a href="tel:9876543210" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#4ade80', fontSize: 12, fontWeight: 600, marginTop: 6, textDecoration: 'none' }}>
+              <Phone size={12} /> 9876543210
             </a>
           </div>
         </aside>
@@ -287,83 +280,69 @@ export default function PatientPortal() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {/* Header Banner */}
               <div className="card" style={{
-                padding: 28, background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                color: 'white', borderRadius: 24, boxShadow: '0 8px 30px rgba(22,163,74,0.25)'
+                padding: 24, background: '#16a34a',
+                color: 'white', borderRadius: 16
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
-                  <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-                    <div style={{
-                      width: 72, height: 72, borderRadius: 22, background: 'white',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 32, fontWeight: 900, color: '#16a34a'
-                    }}>
-                      {currentPatient.name.charAt(0)}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+                  <div>
+                    <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Welcome back, {currentPatient.name}</h2>
+                    <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4 }}>
+                      {currentPatient.age} Yrs · {currentPatient.gender} · Blood Group: <strong>{currentPatient.bloodGroup}</strong>
                     </div>
-                    <div>
-                      <h2 style={{ fontSize: 26, fontWeight: 900, margin: 0 }}>Welcome back, {currentPatient.name}!</h2>
-                      <div style={{ fontSize: 14, opacity: 0.9, marginTop: 4 }}>
-                        {currentPatient.age} Yrs · {currentPatient.gender} · Blood Group: <strong>{currentPatient.bloodGroup}</strong>
-                      </div>
-                      <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>
-                        📍 {currentPatient.village}, {currentPatient.district}
-                      </div>
+                    <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>
+                      {currentPatient.village}, {currentPatient.district}
                     </div>
                   </div>
-
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <span className="badge badge-green" style={{ fontSize: 13, padding: '8px 16px', background: 'white', color: '#16a34a', fontWeight: 800 }}>
-                      {currentPatient.riskLevel} Risk Profile
-                    </span>
-                  </div>
+                  <span className="badge badge-green" style={{ fontSize: 13, padding: '6px 14px', background: 'white', color: '#16a34a', fontWeight: 700 }}>
+                    {currentPatient.riskLevel} Risk Profile
+                  </span>
                 </div>
               </div>
 
-              {/* Vitals & Summary Metrics */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
+              {/* Vitals Summary Metrics */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
                 <div className="stat-card">
-                  <div className="stat-icon" style={{ background: '#dcfce7' }}><Activity size={24} color="#16a34a" /></div>
-                  <div><div style={{ fontSize: 26, fontWeight: 800 }}>{records.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Health Visits</div></div>
+                  <div className="stat-icon" style={{ background: '#f0fdf4' }}><Activity size={22} color="#16a34a" /></div>
+                  <div><div style={{ fontSize: 24, fontWeight: 800 }}>{records.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Health Visits</div></div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-icon" style={{ background: '#e0f2fe' }}><Pill size={24} color="#0ea5e9" /></div>
-                  <div><div style={{ fontSize: 26, fontWeight: 800 }}>{prescriptions.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Active Prescriptions</div></div>
+                  <div className="stat-icon" style={{ background: '#f0f9ff' }}><FileText size={22} color="#0ea5e9" /></div>
+                  <div><div style={{ fontSize: 24, fontWeight: 800 }}>{prescriptions.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Prescriptions</div></div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-icon" style={{ background: '#fef9c3' }}><Calendar size={24} color="#ca8a04" /></div>
-                  <div><div style={{ fontSize: 26, fontWeight: 800 }}>{appointments.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Scheduled Visits</div></div>
+                  <div className="stat-icon" style={{ background: '#fefce8' }}><Calendar size={22} color="#ca8a04" /></div>
+                  <div><div style={{ fontSize: 24, fontWeight: 800 }}>{appointments.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Appointments</div></div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-icon" style={{ background: '#f3e8ff' }}><Syringe size={24} color="#9333ea" /></div>
-                  <div><div style={{ fontSize: 26, fontWeight: 800 }}>{vaccinations.filter(v => v.status === 'Completed').length} / {vaccinations.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Vaccines Done</div></div>
+                  <div className="stat-icon" style={{ background: '#faf5ff' }}><Syringe size={22} color="#9333ea" /></div>
+                  <div><div style={{ fontSize: 24, fontWeight: 800 }}>{vaccinations.filter(v => v.status === 'Completed').length} / {vaccinations.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Vaccines Done</div></div>
                 </div>
               </div>
 
-              {/* Quick Actions Grid */}
+              {/* Summary Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                <div className="card" style={{ padding: 24 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1e293b', marginBottom: 14 }}>Known Conditions & Allergies</h3>
-                  <div style={{ marginBottom: 14 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Medical Conditions</div>
+                <div className="card" style={{ padding: 20 }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', marginBottom: 12 }}>Medical Conditions & Allergies</h3>
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Conditions</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {currentPatient.medicalConditions?.map((c, i) => <span key={i} className="badge badge-blue" style={{ fontSize: 13 }}>{c}</span>)}
+                      {currentPatient.medicalConditions?.map((c, i) => <span key={i} className="badge badge-blue">{c}</span>)}
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Allergies</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 6 }}>Allergies</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {currentPatient.allergies?.map((a, i) => <span key={i} className="badge badge-red" style={{ fontSize: 13 }}>{a}</span>)}
+                      {currentPatient.allergies?.map((a, i) => <span key={i} className="badge badge-red">{a}</span>)}
                     </div>
                   </div>
                 </div>
 
-                <div className="card" style={{ padding: 24, background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '1px solid #bbf7d0' }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#166534', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Sparkles size={20} /> Personalized Health Advice
-                  </h3>
-                  <div style={{ fontSize: 13, color: '#14532d', lineHeight: 1.8 }}>
-                    <p>• Take prescribed Iron Folic Acid tablet daily after dinner with lemon juice.</p>
-                    <p>• Drink at least 3 Litres of clean boiled water daily.</p>
-                    <p>• Next ANC health visit at Mathur PHC with ASHA Worker <strong>Meena Kumari</strong>.</p>
+                <div className="card" style={{ padding: 20, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#166534', marginBottom: 10 }}>Personal Health Advice</h3>
+                  <div style={{ fontSize: 13, color: '#14532d', lineHeight: 1.7 }}>
+                    <p>• Take Iron Folic Acid tablet daily after dinner with citrus fruit juice.</p>
+                    <p>• Drink at least 3 Litres of clean water daily.</p>
+                    <p>• Contact ASHA Worker Meena Kumari (9876543210) for assistance.</p>
                   </div>
                 </div>
               </div>
@@ -372,24 +351,22 @@ export default function PatientPortal() {
 
           {/* 2. BOOK APPOINTMENT TAB */}
           {activeTab === 'book-appointment' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Book Doctor & Hospital Appointment</h2>
-                  <p style={{ fontSize: 13, color: '#64748b' }}>Schedule a visit with PHC doctors or government hospital specialists</p>
-                </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Book Doctor Appointment</h2>
+                <p style={{ fontSize: 13, color: '#64748b' }}>Schedule a consultation at your nearest PHC or hospital</p>
               </div>
 
               {bookingSuccess && (
-                <div style={{ background: '#dcfce7', border: '1px solid #bbf7d0', color: '#166534', padding: 16, borderRadius: 16, fontWeight: 700 }}>
-                  🎉 Appointment booked successfully! Your ASHA Worker and PHC clinic have been notified.
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: 14, borderRadius: 10, fontSize: 14, fontWeight: 600 }}>
+                  Appointment booked successfully! Your clinic has been notified.
                 </div>
               )}
 
-              <div className="card" style={{ padding: 28, maxWidth: 640 }}>
+              <div className="card" style={{ padding: 24, maxWidth: 600 }}>
                 <form onSubmit={handleBookAppointment} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div className="form-group">
-                    <label className="form-label">Select Hospital / PHC Center</label>
+                    <label className="form-label">Select Hospital / PHC</label>
                     <select
                       className="form-select"
                       value={bookingForm.hospitalName}
@@ -409,16 +386,16 @@ export default function PatientPortal() {
                       value={bookingForm.doctorName}
                       onChange={e => setBookingForm({ ...bookingForm, doctorName: e.target.value })}
                     >
-                      <option value="">Choose Doctor (Or any available Medical Officer)</option>
+                      <option value="">Choose Doctor (Or Medical Officer)</option>
                       {doctors.map(d => (
-                        <option key={d.id} value={d.name}>{d.name} ({d.specialty}) · {d.hospital}</option>
+                        <option key={d.id} value={d.name}>{d.name} ({d.specialty})</option>
                       ))}
                     </select>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <div className="form-group">
-                      <label className="form-label">Preferred Date</label>
+                      <label className="form-label">Date</label>
                       <input
                         type="date"
                         className="form-input"
@@ -429,33 +406,33 @@ export default function PatientPortal() {
                     </div>
 
                     <div className="form-group">
-                      <label className="form-label">Preferred Time Slot</label>
+                      <label className="form-label">Time Slot</label>
                       <select
                         className="form-select"
                         value={bookingForm.appointmentTime}
                         onChange={e => setBookingForm({ ...bookingForm, appointmentTime: e.target.value })}
                       >
-                        <option value="9:00 AM">9:00 AM (Morning)</option>
+                        <option value="9:00 AM">9:00 AM</option>
                         <option value="10:00 AM">10:00 AM</option>
                         <option value="11:30 AM">11:30 AM</option>
-                        <option value="2:00 PM">2:00 PM (Afternoon)</option>
+                        <option value="2:00 PM">2:00 PM</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Reason for Visit / Health Symptoms</label>
+                    <label className="form-label">Reason for Visit</label>
                     <textarea
                       className="form-input"
                       rows={3}
-                      placeholder="e.g. Regular ANC checkup, fever, blood pressure review..."
+                      placeholder="Describe symptoms or reason for visit..."
                       value={bookingForm.reason}
                       onChange={e => setBookingForm({ ...bookingForm, reason: e.target.value })}
                     />
                   </div>
 
-                  <button type="submit" className="btn-primary" style={{ padding: '13px', justifyContent: 'center', fontSize: 15, marginTop: 8 }}>
-                    <Calendar size={18} /> Confirm Appointment Booking
+                  <button type="submit" className="btn-primary" style={{ padding: '12px', justifyContent: 'center', fontSize: 14 }}>
+                    <Calendar size={16} /> Confirm Appointment
                   </button>
                 </form>
               </div>
@@ -464,15 +441,15 @@ export default function PatientPortal() {
 
           {/* 3. MY APPOINTMENTS TAB */}
           {activeTab === 'my-appointments' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>My Booked Appointments</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>My Booked Appointments</h2>
               <div className="card" style={{ overflow: 'hidden' }}>
                 <div className="table-container">
                   <table>
                     <thead><tr><th>Doctor</th><th>Hospital</th><th>Date & Time</th><th>Reason</th><th>Status</th></tr></thead>
                     <tbody>
                       {appointments.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No appointments booked yet.</td></tr>
+                        <tr><td colSpan={5} style={{ textAlign: 'center', padding: 30, color: '#94a3b8' }}>No appointments booked yet.</td></tr>
                       ) : (
                         appointments.map(a => (
                           <tr key={a._id}>
@@ -493,16 +470,16 @@ export default function PatientPortal() {
 
           {/* 4. HEALTH RECORDS TAB */}
           {activeTab === 'health-records' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Clinical Health Records & Diagnoses</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Health Visit Records</h2>
               {records.length === 0 ? (
-                <div className="card" style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No visit records found.</div>
+                <div className="card" style={{ padding: 30, textAlign: 'center', color: '#94a3b8' }}>No visit records found.</div>
               ) : (
                 records.map(r => (
-                  <div key={r._id} className="card" style={{ padding: 24, borderLeft: '4px solid #16a34a' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#1e293b' }}>{r.chiefComplaint || 'Health Checkup Visit'}</div>
-                    <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 12 }}>Visited on {new Date(r.visitDate).toLocaleDateString('en-IN')} · Conducted by ASHA Worker Meena Kumari</div>
-                    {r.diagnosis && <div style={{ fontSize: 14, color: '#166534', background: '#f0fdf4', padding: 12, borderRadius: 10, marginBottom: 8 }}><strong>Diagnosis:</strong> {r.diagnosis}</div>}
+                  <div key={r._id} className="card" style={{ padding: 20 }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>{r.chiefComplaint || 'Health Checkup Visit'}</div>
+                    <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 10 }}>Visited on {new Date(r.visitDate).toLocaleDateString('en-IN')}</div>
+                    {r.diagnosis && <div style={{ fontSize: 13, color: '#166534', background: '#f0fdf4', padding: 10, borderRadius: 8, marginBottom: 6 }}><strong>Diagnosis:</strong> {r.diagnosis}</div>}
                     {r.doctorNotes && <div style={{ fontSize: 13, color: '#475569' }}><strong>Doctor Notes:</strong> {r.doctorNotes}</div>}
                   </div>
                 ))
@@ -512,16 +489,16 @@ export default function PatientPortal() {
 
           {/* 5. PRESCRIPTIONS TAB */}
           {activeTab === 'prescriptions' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Digital Prescriptions (Doctor & AI Rx)</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Digital Prescriptions</h2>
               {prescriptions.length === 0 ? (
-                <div className="card" style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No prescriptions available.</div>
+                <div className="card" style={{ padding: 30, textAlign: 'center', color: '#94a3b8' }}>No prescriptions found.</div>
               ) : (
                 prescriptions.map(p => (
-                  <div key={p._id} className="card" style={{ padding: 24, borderLeft: '4px solid #0ea5e9' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#0ea5e9' }}>Doctor: {p.doctorName}</div>
+                  <div key={p._id} className="card" style={{ padding: 20 }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#0ea5e9' }}>Doctor: {p.doctorName}</div>
                     <div style={{ fontSize: 12, color: '#64748b' }}>{p.hospitalName} · Date: {new Date(p.prescriptionDate).toLocaleDateString('en-IN')}</div>
-                    {p.notes && <div style={{ fontSize: 14, color: '#374151', background: '#f8fafc', padding: 14, borderRadius: 12, marginTop: 12 }}>{p.notes}</div>}
+                    {p.notes && <div style={{ fontSize: 13, color: '#374151', background: '#f8fafc', padding: 12, borderRadius: 10, marginTop: 10 }}>{p.notes}</div>}
                   </div>
                 ))
               )}
@@ -530,44 +507,44 @@ export default function PatientPortal() {
 
           {/* 6. MEDICINE REMINDERS TAB */}
           {activeTab === 'reminders' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Daily Medicine Intake Schedule</h2>
-              <div className="card" style={{ padding: 24 }}>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#16a34a', marginBottom: 16 }}>Today's Prescribed Dose Checklist</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Daily Medicine Reminders</h2>
+              <div className="card" style={{ padding: 20 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#16a34a', marginBottom: 14 }}>Today's Prescribed Dose Checklist</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
-                    { id: 'm1', name: 'Iron Folic Acid (IFA) 100mg', dose: '1 Tablet after Dinner', time: '8:00 PM', freq: 'Daily' },
-                    { id: 'm2', name: 'Calcium Supplement 500mg', dose: '1 Tablet after Breakfast', time: '9:00 AM', freq: 'Daily' },
-                    { id: 'm3', name: 'Paracetamol 500mg', dose: '1 Tablet if fever > 100°F', time: 'As needed', freq: 'SOS' }
+                    { id: 'm1', name: 'Iron Folic Acid (IFA) 100mg', dose: '1 Tablet after Dinner', time: '8:00 PM' },
+                    { id: 'm2', name: 'Calcium Supplement 500mg', dose: '1 Tablet after Breakfast', time: '9:00 AM' },
+                    { id: 'm3', name: 'Paracetamol 500mg', dose: '1 Tablet if fever occurs', time: 'SOS' }
                   ].map(m => (
                     <div
                       key={m.id}
                       onClick={() => toggleMedTaken(m.id)}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '14px 18px', borderRadius: 14, cursor: 'pointer',
-                        border: '1.5px solid', borderColor: takenMeds[m.id] ? '#16a34a' : '#e2e8f0',
-                        background: takenMeds[m.id] ? '#dcfce7' : 'white'
+                        padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
+                        border: '1px solid', borderColor: takenMeds[m.id] ? '#16a34a' : '#e2e8f0',
+                        background: takenMeds[m.id] ? '#f0fdf4' : 'white'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <div style={{
-                          width: 24, height: 24, borderRadius: 8, border: '2px solid',
+                          width: 22, height: 22, borderRadius: 6, border: '2px solid',
                           borderColor: takenMeds[m.id] ? '#16a34a' : '#cbd5e1',
                           background: takenMeds[m.id] ? '#16a34a' : 'white',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
                         }}>
-                          {takenMeds[m.id] && <Check size={16} />}
+                          {takenMeds[m.id] && <Check size={14} />}
                         </div>
                         <div>
-                          <div style={{ fontSize: 15, fontWeight: 700, textDecoration: takenMeds[m.id] ? 'line-through' : 'none', color: takenMeds[m.id] ? '#166534' : '#1e293b' }}>
+                          <div style={{ fontSize: 14, fontWeight: 600, textDecoration: takenMeds[m.id] ? 'line-through' : 'none', color: takenMeds[m.id] ? '#166534' : '#1e293b' }}>
                             {m.name}
                           </div>
                           <div style={{ fontSize: 12, color: '#64748b' }}>{m.dose} · {m.time}</div>
                         </div>
                       </div>
                       <span className={`badge ${takenMeds[m.id] ? 'badge-green' : 'badge-yellow'}`}>
-                        {takenMeds[m.id] ? 'Taken Today' : 'Pending'}
+                        {takenMeds[m.id] ? 'Taken' : 'Pending'}
                       </span>
                     </div>
                   ))}
@@ -578,40 +555,34 @@ export default function PatientPortal() {
 
           {/* 7. ASHA WORKER TAB */}
           {activeTab === 'asha' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Assigned ASHA Worker Assistance</h2>
-              <div className="card" style={{ padding: 28, background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: 'white', borderRadius: 24 }}>
-                <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 20 }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 20, background: 'linear-gradient(135deg, #16a34a, #22c55e)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Assigned ASHA Worker</h2>
+              <div className="card" style={{ padding: 24, maxWidth: 500 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 16, background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 800, color: 'white' }}>
                     M
                   </div>
                   <div>
-                    <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>Meena Kumari</h3>
-                    <div style={{ fontSize: 14, color: '#4ade80', fontWeight: 600 }}>Accredited Social Health Activist (ASHA)</div>
-                    <div style={{ fontSize: 13, color: '#cbd5e1', marginTop: 2 }}>📍 Primary Health Centre Mathur · Krishnagiri Block</div>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Meena Kumari</h3>
+                    <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>ASHA Worker</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>Mathur Village PHC</div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.08)', padding: 14, borderRadius: 14 }}>
-                    <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>Contact Phone</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#4ade80' }}>+91 9876543210</div>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.08)', padding: 14, borderRadius: 14 }}>
-                    <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>Assigned Village</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>Mathur Village</div>
-                  </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, color: '#475569' }}><strong>Phone:</strong> +91 9876543210</div>
+                  <div style={{ fontSize: 13, color: '#475569' }}><strong>Center:</strong> Primary Health Centre Mathur</div>
                 </div>
 
                 <a
                   href="tel:9876543210"
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    background: 'linear-gradient(135deg, #16a34a, #15803d)', color: 'white',
-                    borderRadius: 12, padding: '12px 24px', textDecoration: 'none', fontSize: 14, fontWeight: 800
+                    background: '#16a34a', color: 'white',
+                    borderRadius: 10, padding: '10px 18px', textDecoration: 'none', fontSize: 13, fontWeight: 700
                   }}
                 >
-                  <Phone size={16} /> Call ASHA Worker Now
+                  <Phone size={15} /> Call ASHA Worker
                 </a>
               </div>
             </div>
@@ -619,24 +590,24 @@ export default function PatientPortal() {
 
           {/* 8. PROFILE TAB */}
           {activeTab === 'profile' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>My Patient Profile</h2>
-              <div className="card" style={{ padding: 28, maxWidth: 600 }}>
-                <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 24 }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 20, background: 'linear-gradient(135deg, #16a34a, #22c55e)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900, color: 'white' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>My Patient Profile</h2>
+              <div className="card" style={{ padding: 24, maxWidth: 500 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 20 }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 16, background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 800, color: 'white' }}>
                     {currentPatient.name.charAt(0)}
                   </div>
                   <div>
-                    <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{currentPatient.name}</h3>
-                    <div style={{ fontSize: 13, color: '#64748b' }}>Patient Account ID: #{selectedPatientId || '1001'}</div>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{currentPatient.name}</h3>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>Patient Profile</div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>AGE / GENDER</div><div style={{ fontSize: 15, fontWeight: 700 }}>{currentPatient.age} Yrs · {currentPatient.gender}</div></div>
-                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>BLOOD GROUP</div><div style={{ fontSize: 15, fontWeight: 700, color: '#16a34a' }}>{currentPatient.bloodGroup}</div></div>
-                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>PHONE</div><div style={{ fontSize: 15, fontWeight: 700 }}>{currentPatient.phone}</div></div>
-                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>VILLAGE</div><div style={{ fontSize: 15, fontWeight: 700 }}>{currentPatient.village}</div></div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>AGE / GENDER</div><div style={{ fontSize: 14, fontWeight: 600 }}>{currentPatient.age} Yrs · {currentPatient.gender}</div></div>
+                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>BLOOD GROUP</div><div style={{ fontSize: 14, fontWeight: 600, color: '#16a34a' }}>{currentPatient.bloodGroup}</div></div>
+                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>PHONE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{currentPatient.phone}</div></div>
+                  <div><div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>VILLAGE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{currentPatient.village}</div></div>
                 </div>
               </div>
             </div>
@@ -644,36 +615,36 @@ export default function PatientPortal() {
 
           {/* 9. SETTINGS TAB */}
           {activeTab === 'settings' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1e293b' }}>Portal Settings & Preferences</h2>
-              <div className="card" style={{ padding: 28, maxWidth: 600 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Settings & Preferences</h2>
+              <div className="card" style={{ padding: 24, maxWidth: 500 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 700 }}>SMS & WhatsApp Medicine Alerts</div>
-                      <div style={{ fontSize: 12, color: '#64748b' }}>Receive daily medicine reminder SMS</div>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>SMS Medicine Reminders</div>
+                      <div style={{ fontSize: 12, color: '#64748b' }}>Receive daily dose alerts</div>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.smsAlerts}
                       onChange={e => setSettings({ ...settings, smsAlerts: e.target.checked })}
-                      style={{ width: 20, height: 20, cursor: 'pointer' }}
+                      style={{ width: 18, height: 18, cursor: 'pointer' }}
                     />
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 700 }}>Language</div>
-                      <div style={{ fontSize: 12, color: '#64748b' }}>Select interface language</div>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>Language</div>
+                      <div style={{ fontSize: 12, color: '#64748b' }}>Portal display language</div>
                     </div>
                     <select
                       className="form-select"
-                      style={{ width: 140 }}
+                      style={{ width: 120 }}
                       value={settings.language}
                       onChange={e => setSettings({ ...settings, language: e.target.value })}
                     >
                       <option value="English">English</option>
-                      <option value="Tamil">தமிழ் (Tamil)</option>
+                      <option value="Tamil">Tamil</option>
                     </select>
                   </div>
                 </div>
