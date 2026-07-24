@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { hospitalAPI, patientAPI, medicineAPI, authAPI } from '../services/api';
+import { hospitalAPI, patientAPI, authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import {
-  Building2, Users, Pill, UserCheck, Shield, Plus, Trash2, LogOut, Search,
+  Building2, Users, UserCheck, Shield, Plus, Trash2, LogOut, Search,
   CheckCircle2, AlertTriangle, Phone, MapPin, Edit, RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +11,11 @@ export default function AdminPortal() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('hospitals'); // hospitals | asha-workers | medicines | patients
+  const [activeTab, setActiveTab] = useState('hospitals'); // hospitals | asha-workers | patients
 
   // State collections
   const [hospitals, setHospitals] = useState([]);
   const [patients, setPatients] = useState([]);
-  const [medicines, setMedicines] = useState([]);
   const [ashaWorkers, setAshaWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -24,9 +23,6 @@ export default function AdminPortal() {
   // Form modals
   const [showAddHospital, setShowAddHospital] = useState(false);
   const [hospitalForm, setHospitalForm] = useState({ name: '', location: '', block: 'Krishnagiri Block', district: 'Krishnagiri', phone: '', doctorCount: 3 });
-
-  const [showAddMedicine, setShowAddMedicine] = useState(false);
-  const [medicineForm, setMedicineForm] = useState({ name: '', genericName: '', category: 'Analgesic', quantity: 100, lowStockThreshold: 20 });
 
   const [showAddAsha, setShowAddAsha] = useState(false);
   const [ashaForm, setAshaForm] = useState({ name: '', email: '', password: 'asha1234', phone: '', village: 'Mathur', district: 'Krishnagiri' });
@@ -38,16 +34,13 @@ export default function AdminPortal() {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const [hRes, pRes, mRes] = await Promise.all([
+      const [hRes, pRes] = await Promise.all([
         hospitalAPI.getAll(),
         patientAPI.getAll({ limit: 200 }),
-        medicineAPI.getAll({ limit: 200 }),
       ]);
       setHospitals(hRes.data.data || []);
       setPatients(pRes.data.data || []);
-      setMedicines(mRes.data.data || []);
 
-      // Mock or fetch ASHA workers list
       setAshaWorkers([
         { _id: '1', name: 'Meena Kumari', email: 'meena@nalamhealth.in', phone: '9876543210', village: 'Mathur', district: 'Krishnagiri', patientCount: 10 },
         { _id: '2', name: 'Anitha Ramesh', email: 'anitha@nalamhealth.in', phone: '9876543211', village: 'Veppanapalli', district: 'Krishnagiri', patientCount: 8 },
@@ -86,30 +79,6 @@ export default function AdminPortal() {
       setHospitals(prev => prev.filter(h => h._id !== id));
     } catch (err) {
       alert('Failed to delete hospital');
-    }
-  };
-
-  // Add Medicine
-  const handleAddMedicine = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await medicineAPI.create({ ...medicineForm, unit: 'Tablets', expiryDate: new Date('2026-12-31') });
-      setMedicines(prev => [res.data.data, ...prev]);
-      setShowAddMedicine(false);
-      setMedicineForm({ name: '', genericName: '', category: 'Analgesic', quantity: 100, lowStockThreshold: 20 });
-    } catch (err) {
-      alert('Failed to add medicine');
-    }
-  };
-
-  // Delete Medicine
-  const handleDeleteMedicine = async (id) => {
-    if (!window.confirm('Delete this medicine from inventory?')) return;
-    try {
-      await medicineAPI.delete(id);
-      setMedicines(prev => prev.filter(m => m._id !== id));
-    } catch (err) {
-      alert('Failed to delete medicine');
     }
   };
 
@@ -173,7 +142,6 @@ export default function AdminPortal() {
           {[
             { id: 'hospitals', label: 'Hospitals Management', icon: Building2, count: hospitals.length },
             { id: 'asha-workers', label: 'ASHA Workers', icon: UserCheck, count: ashaWorkers.length },
-            { id: 'medicines', label: 'Medicine Inventory', icon: Pill, count: medicines.length },
             { id: 'patients', label: 'Patient Details', icon: Users, count: patients.length },
           ].map(item => {
             const Icon = item.icon;
@@ -307,61 +275,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* 3. MEDICINE INVENTORY MANAGEMENT */}
-          {activeTab === 'medicines' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Medicine Stock Management</h2>
-                  <p style={{ fontSize: 13, color: '#64748b' }}>Manage PHC central drug inventory and stock quantities</p>
-                </div>
-                <button onClick={() => setShowAddMedicine(true)} className="btn-primary" style={{ background: '#7c3aed' }}>
-                  <Plus size={16} /> Add Medicine Stock
-                </button>
-              </div>
-
-              {showAddMedicine && (
-                <div className="card" style={{ padding: 20, border: '1px solid #7c3aed' }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Add Medicine to Stock</h3>
-                  <form onSubmit={handleAddMedicine} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                    <div className="form-group"><label className="form-label">Medicine Name</label><input className="form-input" required value={medicineForm.name} onChange={e => setMedicineForm({ ...medicineForm, name: e.target.value })} /></div>
-                    <div className="form-group"><label className="form-label">Generic Name</label><input className="form-input" value={medicineForm.genericName} onChange={e => setMedicineForm({ ...medicineForm, genericName: e.target.value })} /></div>
-                    <div className="form-group"><label className="form-label">Category</label><input className="form-input" value={medicineForm.category} onChange={e => setMedicineForm({ ...medicineForm, category: e.target.value })} /></div>
-                    <div className="form-group"><label className="form-label">Quantity</label><input type="number" className="form-input" value={medicineForm.quantity} onChange={e => setMedicineForm({ ...medicineForm, quantity: parseInt(e.target.value) })} /></div>
-                    <div style={{ gridColumn: 'span 2', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                      <button type="button" onClick={() => setShowAddMedicine(false)} className="btn-secondary">Cancel</button>
-                      <button type="submit" className="btn-primary" style={{ background: '#7c3aed' }}>Add Stock</button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
-              <div className="card" style={{ overflow: 'hidden' }}>
-                <div className="table-container">
-                  <table>
-                    <thead><tr><th>Medicine Name</th><th>Generic Name</th><th>Category</th><th>Available Quantity</th><th>Actions</th></tr></thead>
-                    <tbody>
-                      {medicines.map(m => (
-                        <tr key={m._id}>
-                          <td><strong>{m.name}</strong></td>
-                          <td>{m.genericName}</td>
-                          <td>{m.category}</td>
-                          <td><strong style={{ color: m.quantity <= m.lowStockThreshold ? '#dc2626' : '#16a34a' }}>{m.quantity}</strong></td>
-                          <td>
-                            <button onClick={() => handleDeleteMedicine(m._id)} style={{ border: 'none', background: '#fee2e2', color: '#dc2626', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' }}>
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 4. PATIENT DETAILS MANAGEMENT */}
+          {/* 3. PATIENT DETAILS MANAGEMENT */}
           {activeTab === 'patients' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
