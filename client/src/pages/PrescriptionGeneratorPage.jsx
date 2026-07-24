@@ -38,10 +38,14 @@ export default function PrescriptionGeneratorPage() {
       alert('Please select a medicine from the inventory search bar.');
       return;
     }
+    const match = String(dose).match(/\d+/);
+    const parsedQty = match ? parseInt(match[0], 10) : 1;
+
     const newItem = {
       medicineId: selectedMed._id,
       name: selectedMed.name,
       dosage: dose,
+      quantityDeducted: parsedQty,
       frequency,
       duration,
       instructions

@@ -73,10 +73,18 @@ const createPrescription = async (req, res, next) => {
           }
 
           if (med) {
-            // Deduct stock quantity by 1 for each prescribed item
-            med.quantity = Math.max(0, med.quantity - 1);
+            // Deduct stock quantity by prescribed dose count (e.g. 10 tablets)
+            let deductAmount = 1;
+            if (item.quantityDeducted && typeof item.quantityDeducted === 'number') {
+              deductAmount = item.quantityDeducted;
+            } else if (item.dosage) {
+              const match = String(item.dosage).match(/\d+/);
+              if (match) deductAmount = parseInt(match[0], 10);
+            }
+
+            med.quantity = Math.max(0, med.quantity - deductAmount);
             await med.save();
-            console.log(`📉 Stock reduced for ${med.name}: new quantity is ${med.quantity}`);
+            console.log(`📉 Stock reduced by ${deductAmount} for ${med.name}: new quantity is ${med.quantity}`);
 
             // ==================== n8n LOW STOCK WEBHOOK TRIGGER ====================
             if (med.quantity <= med.lowStockThreshold) {
