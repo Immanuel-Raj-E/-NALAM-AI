@@ -345,3 +345,4 @@ The ECG module is built using **EfficientNet-B0**, a lightweight CNN pre-trained
 # ❤️ Conclusion
 
 NALAM AI empowers ASHA workers by integrating Artificial Intelligence, Digital Health Records, and Workflow Automation into a single platform. The system simplifies patient management, assists in medical decision-making, automates medicine inventory, and enhances the overall efficiency of rural healthcare services.
+
