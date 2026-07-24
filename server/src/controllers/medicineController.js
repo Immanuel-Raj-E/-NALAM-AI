@@ -45,6 +45,29 @@ const updateMedicine = async (req, res, next) => {
       { new: true }
     );
     if (!med) return res.status(404).json({ success: false, message: 'Medicine not found' });
+
+    // ==================== START n8n WEBHOOK INTEGRATION ====================
+    if (med.quantity <= med.lowStockThreshold) {
+      try {
+        const webhookUrl = process.env.N8N_WEBHOOK_URL || 'https://immanuel123.app.n8n.cloud/webhook/low-stock-alert';
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            medicineName: med.name,
+            availableQuantity: med.quantity,
+            threshold: med.lowStockThreshold,
+            unit: med.unit || 'Tablets',
+            email: process.env.ALERT_EMAIL || 'imman8046@gmail.com'
+          })
+        });
+        console.log(`📡 n8n Low Stock Webhook triggered for medicine: ${med.name}`);
+      } catch (webhookErr) {
+        console.error('⚠️ n8n Webhook Error (non-blocking):', webhookErr.message);
+      }
+    }
+    // ===================== END n8n WEBHOOK INTEGRATION =====================
+
     res.json({ success: true, message: 'Medicine updated', data: med });
   } catch (error) {
     next(error);
