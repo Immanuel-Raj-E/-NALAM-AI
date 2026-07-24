@@ -197,8 +197,8 @@ const analyzeReport = (ocrText) => {
   }
 
   const summary = findings.length > 0
-    ? `AI Analysis: Found ${findings.length} potential area(s) of concern. ${abnormalValues.length > 0 ? 'Abnormal values detected in: ' + abnormalValues.map(v => v.parameter).join(', ') + '.' : ''} Please consult a doctor for proper interpretation.`
-    : 'AI Analysis: No obvious abnormal values detected in the extracted text. Please have a qualified medical professional review the complete report.';
+    ? `Clinical Report Description: Extracted report indicates ${findings.length} key parameter area(s) requiring clinical follow-up. ${abnormalValues.length > 0 ? 'Abnormal values identified: ' + abnormalValues.map(v => `${v.parameter} (${v.status}: ${v.value})`).join(', ') + '.' : ''} Recommendation: Advise patient on prescribed follow-up schedule and monitor vitals.`
+    : 'Clinical Report Description: All extracted lab values appear within standard reference intervals. Continue routine preventive health monitoring and regular ASHA checkups.';
 
   return { summary, findings, abnormalValues };
 };

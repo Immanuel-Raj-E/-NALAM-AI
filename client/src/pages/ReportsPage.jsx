@@ -106,11 +106,13 @@ export default function ReportsPage() {
 
                 {expandedId === r._id && (
                   <div style={{ borderTop: '1px solid #f1f5f9', padding: 20, background: '#f8fafc' }}>
-                    {/* AI Summary */}
+                    {/* Medical Report Description & Clinical Summary */}
                     {r.aiSummary && (
-                      <div style={{ background: 'white', borderRadius: 12, padding: 16, marginBottom: 16, border: '1px solid #e2e8f0' }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', marginBottom: 8 }}>🤖 AI Summary</div>
-                        <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>{r.aiSummary}</p>
+                      <div style={{ background: 'white', borderRadius: 12, padding: 16, marginBottom: 16, border: '1px solid #bbf7d0' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#16a34a', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <FileText size={16} /> Medical Report Description & Clinical Summary
+                        </div>
+                        <p style={{ fontSize: 13, color: '#1e293b', lineHeight: 1.7 }}>{r.aiSummary}</p>
                       </div>
                     )}
 
