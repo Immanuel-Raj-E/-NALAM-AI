@@ -10,68 +10,76 @@ if (process.env.GEMINI_API_KEY) {
 }
 
 /**
- * Call Google Gemini API for medical report image & text analysis
+ * Call Google Gemini API for medical report image & text analysis (3s max timeout)
  */
 const callGeminiAI = async (prompt, base64Image = null) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
-  // 1. Try SDK call
-  try {
-    const aiInstance = genAI || new GoogleGenerativeAI(apiKey);
-    const model = aiInstance.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    let contents = [prompt];
-    if (base64Image && base64Image.startsWith('data:')) {
-      const parts = base64Image.split(';base64,');
-      const mimeType = parts[0].replace('data:', '') || 'image/jpeg';
-      const base64Data = parts[1] || parts[0];
-      contents = [
-        prompt,
-        {
-          inlineData: {
-            data: base64Data,
-            mimeType: mimeType
+  const geminiPromise = new Promise(async (resolve) => {
+    // 1. Try SDK call
+    try {
+      const aiInstance = genAI || new GoogleGenerativeAI(apiKey);
+      const model = aiInstance.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      let contents = [prompt];
+      if (base64Image && base64Image.startsWith('data:')) {
+        const parts = base64Image.split(';base64,');
+        const mimeType = parts[0].replace('data:', '') || 'image/jpeg';
+        const base64Data = parts[1] || parts[0];
+        contents = [
+          prompt,
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType
+            }
           }
-        }
-      ];
+        ];
+      }
+      const result = await model.generateContent(contents);
+      const response = await result.response;
+      const text = response.text();
+      if (text) return resolve(text);
+    } catch (err) {
+      console.error('Gemini SDK call note:', err.message);
     }
-    const result = await model.generateContent(contents);
-    const response = await result.response;
-    const text = response.text();
-    if (text) return text;
-  } catch (err) {
-    console.error('Gemini SDK call note:', err.message);
-  }
 
-  // 2. Try Direct REST API fetch as fallback
-  try {
-    let parts = [{ text: prompt }];
-    if (base64Image && base64Image.startsWith('data:')) {
-      const p = base64Image.split(';base64,');
-      const mimeType = p[0].replace('data:', '') || 'image/jpeg';
-      const base64Data = p[1] || p[0];
-      parts.push({
-        inline_data: {
-          mime_type: mimeType,
-          data: base64Data
-        }
+    // 2. Try Direct REST API fetch as fallback
+    try {
+      let parts = [{ text: prompt }];
+      if (base64Image && base64Image.startsWith('data:')) {
+        const p = base64Image.split(';base64,');
+        const mimeType = p[0].replace('data:', '') || 'image/jpeg';
+        const base64Data = p[1] || p[0];
+        parts.push({
+          inline_data: {
+            mime_type: mimeType,
+            data: base64Data
+          }
+        });
+      }
+
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts }] })
       });
+      const data = await res.json();
+      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        return resolve(data.candidates[0].content.parts[0].text);
+      }
+    } catch (fetchErr) {
+      console.error('Gemini REST fetch note:', fetchErr.message);
     }
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts }] })
-    });
-    const data = await res.json();
-    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-      return data.candidates[0].content.parts[0].text;
-    }
-  } catch (fetchErr) {
-    console.error('Gemini REST fetch note:', fetchErr.message);
-  }
+    resolve(null);
+  });
 
-  return null;
+  const timeoutPromise = new Promise((resolve) => {
+    setTimeout(() => resolve(null), 3000);
+  });
+
+  return Promise.race([geminiPromise, timeoutPromise]);
 };
 
 const symptomDatabase = {
