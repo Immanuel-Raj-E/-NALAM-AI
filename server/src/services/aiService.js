@@ -1,8 +1,47 @@
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+let genAI = null;
+if (process.env.GEMINI_API_KEY) {
+  try {
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  } catch (e) {
+    console.error('Gemini AI init note:', e.message);
+  }
+}
+
 /**
- * NALAM AI - Mock AI Service
- * Provides rule-based responses for symptom checking and disease prediction.
- * Replace with a real AI model API (e.g., Google Gemini, OpenAI) in production.
+ * Call Google Gemini API for medical report analysis & chat
  */
+const callGeminiAI = async (prompt, base64Image = null) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const aiInstance = genAI || new GoogleGenerativeAI(apiKey);
+    const model = aiInstance.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    let contents = [prompt];
+    if (base64Image && base64Image.startsWith('data:')) {
+      const parts = base64Image.split(';base64,');
+      const mimeType = parts[0].replace('data:', '') || 'image/jpeg';
+      const base64Data = parts[1] || parts[0];
+      contents = [
+        prompt,
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+          }
+        }
+      ];
+    }
+    const result = await model.generateContent(contents);
+    const response = await result.response;
+    return response.text();
+  } catch (err) {
+    console.error('Gemini API call note:', err.message);
+    return null;
+  }
+};
 
 const symptomDatabase = {
   fever: {
@@ -163,7 +202,24 @@ const predictDisease = (symptoms) => {
 /**
  * Analyze OCR text and metadata from medical report image
  */
-const analyzeReport = (ocrText = '', reportType = 'Blood Test', reportName = 'Medical Diagnostic Report') => {
+const analyzeReport = async (ocrText = '', reportType = 'Blood Test', reportName = 'Medical Diagnostic Report', base64Image = null) => {
+  // If Google Gemini API key is configured, query Gemini Generative AI for report analysis
+  if (process.env.GEMINI_API_KEY) {
+    const prompt = `You are a medical diagnostic expert. Analyze this ${reportType} report titled "${reportName}". OCR extracted text: "${ocrText}". Provide a concise 2-sentence clinical description summary and highlight 2 important key findings or recommendations.`;
+    const geminiText = await callGeminiAI(prompt, base64Image);
+    if (geminiText) {
+      return {
+        summary: `🤖 Google Gemini AI Clinical Summary: ${geminiText.trim()}`,
+        findings: [
+          `Gemini AI Summary: ${geminiText.trim().slice(0, 120)}...`,
+          `Diagnostic Report Type: ${reportType}`,
+          `Recommendation: Follow up with Primary Health Centre Medical Officer.`
+        ],
+        abnormalValues: []
+      };
+    }
+  }
+
   const text = (ocrText || '').toLowerCase();
   const findings = [];
   const abnormalValues = [];

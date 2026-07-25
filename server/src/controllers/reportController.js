@@ -58,19 +58,19 @@ const createReport = async (req, res, next) => {
           } catch (ocrErr) {
             console.error('OCR Extraction note:', ocrErr.message);
           }
-          const analysis = analyzeReport(ocrText, reportType || 'Blood Test', reportName || 'Medical Report');
+          const analysis = await analyzeReport(ocrText, reportType || 'Blood Test', reportName || 'Medical Report', fileUrl);
           aiSummary = analysis.summary;
           importantFindings = analysis.findings;
           abnormalValues = analysis.abnormalValues;
         }
       } catch (err) {
         console.error('Report processing error:', err.message);
-        const analysis = analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
+        const analysis = await analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
         aiSummary = analysis.summary;
         importantFindings = analysis.findings;
       }
     } else {
-      const analysis = analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
+      const analysis = await analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
       aiSummary = analysis.summary;
       importantFindings = analysis.findings;
     }
