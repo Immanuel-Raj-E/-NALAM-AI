@@ -51,7 +51,7 @@ export default function ProfilePage() {
               </div>
               <div style={{ fontSize: 20, fontWeight: 800, color: '#1e293b', marginBottom: 4 }}>{user?.name}</div>
               <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 600, background: '#f0fdf4', display: 'inline-block', padding: '4px 12px', borderRadius: 20, marginBottom: 16 }}>
-                ASHA Worker
+                ASHA Worker · {user?.ashaWorkerId || 'ASHA-101'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
                 <InfoRow icon={<Mail size={14} />} value={user?.email} />
@@ -65,6 +65,10 @@ export default function ProfilePage() {
             <div className="card" style={{ padding: 20 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e293b', marginBottom: 12 }}>Account Information</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', marginBottom: 2 }}>ASHA Worker ID</div>
+                  <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 700 }}>{user?.ashaWorkerId || 'ASHA-101'}</div>
+                </div>
                 <div>
                   <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', marginBottom: 2 }}>Role</div>
                   <div style={{ fontSize: 13, color: '#1e293b', fontWeight: 600 }}>ASHA Worker</div>

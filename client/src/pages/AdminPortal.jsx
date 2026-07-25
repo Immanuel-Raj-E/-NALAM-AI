@@ -25,7 +25,7 @@ export default function AdminPortal() {
   const [hospitalForm, setHospitalForm] = useState({ name: '', location: '', block: 'Krishnagiri Block', district: 'Krishnagiri', phone: '', doctorCount: 3 });
 
   const [showAddAsha, setShowAddAsha] = useState(false);
-  const [ashaForm, setAshaForm] = useState({ name: '', email: '', password: 'asha1234', phone: '', village: 'Mathur', district: 'Krishnagiri' });
+  const [ashaForm, setAshaForm] = useState({ ashaWorkerId: 'ASHA-104', name: '', email: '', password: 'asha1234', phone: '', village: 'Mathur', district: 'Krishnagiri' });
 
   useEffect(() => {
     fetchAdminData();
@@ -42,9 +42,9 @@ export default function AdminPortal() {
       setPatients(pRes.data.data || []);
 
       setAshaWorkers([
-        { _id: '1', name: 'Meena Kumari', email: 'meena@nalamhealth.in', phone: '9876543210', village: 'Mathur', district: 'Krishnagiri', patientCount: 10 },
-        { _id: '2', name: 'Anitha Ramesh', email: 'anitha@nalamhealth.in', phone: '9876543211', village: 'Veppanapalli', district: 'Krishnagiri', patientCount: 8 },
-        { _id: '3', name: 'Kavya Senthil', email: 'kavya@nalamhealth.in', phone: '9876543212', village: 'Bargur', district: 'Krishnagiri', patientCount: 6 },
+        { _id: '1', ashaWorkerId: 'ASHA-101', name: 'Meena Kumari', email: 'meena@nalamhealth.in', phone: '9876543210', village: 'Mathur', district: 'Krishnagiri', patientCount: 10 },
+        { _id: '2', ashaWorkerId: 'ASHA-102', name: 'Anitha Ramesh', email: 'anitha@nalamhealth.in', phone: '9876543211', village: 'Veppanapalli', district: 'Krishnagiri', patientCount: 8 },
+        { _id: '3', ashaWorkerId: 'ASHA-103', name: 'Kavya Senthil', email: 'kavya@nalamhealth.in', phone: '9876543212', village: 'Bargur', district: 'Krishnagiri', patientCount: 6 },
       ]);
     } catch (err) {
       console.error('Failed to load admin data', err);
@@ -242,10 +242,11 @@ export default function AdminPortal() {
                 <div className="card" style={{ padding: 20, border: '1px solid #7c3aed' }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Register New ASHA Worker</h3>
                   <form onSubmit={handleAddAsha} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                    <div className="form-group"><label className="form-label">ASHA Worker ID</label><input className="form-input" required value={ashaForm.ashaWorkerId} onChange={e => setAshaForm({ ...ashaForm, ashaWorkerId: e.target.value })} /></div>
                     <div className="form-group"><label className="form-label">Full Name</label><input className="form-input" required value={ashaForm.name} onChange={e => setAshaForm({ ...ashaForm, name: e.target.value })} /></div>
                     <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" required value={ashaForm.email} onChange={e => setAshaForm({ ...ashaForm, email: e.target.value })} /></div>
                     <div className="form-group"><label className="form-label">Phone</label><input className="form-input" required value={ashaForm.phone} onChange={e => setAshaForm({ ...ashaForm, phone: e.target.value })} /></div>
-                    <div className="form-group"><label className="form-label">Assigned Village</label><input className="form-input" required value={ashaForm.village} onChange={e => setAshaForm({ ...ashaForm, village: e.target.value })} /></div>
+                    <div className="form-group" style={{ gridColumn: 'span 2' }}><label className="form-label">Assigned Village</label><input className="form-input" required value={ashaForm.village} onChange={e => setAshaForm({ ...ashaForm, village: e.target.value })} /></div>
                     <div style={{ gridColumn: 'span 2', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                       <button type="button" onClick={() => setShowAddAsha(false)} className="btn-secondary">Cancel</button>
                       <button type="submit" className="btn-primary" style={{ background: '#7c3aed' }}>Register Worker</button>
@@ -257,10 +258,11 @@ export default function AdminPortal() {
               <div className="card" style={{ overflow: 'hidden' }}>
                 <div className="table-container">
                   <table>
-                    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Assigned Village</th><th>Patients Assigned</th></tr></thead>
+                    <thead><tr><th>ASHA Worker ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Assigned Village</th><th>Patients Assigned</th></tr></thead>
                     <tbody>
                       {ashaWorkers.map(w => (
                         <tr key={w._id}>
+                          <td><span className="badge" style={{ background: '#f3e8ff', color: '#7e22ce', fontWeight: 700 }}>{w.ashaWorkerId || 'ASHA-101'}</span></td>
                           <td><strong>{w.name}</strong></td>
                           <td>{w.email}</td>
                           <td>{w.phone}</td>

@@ -61,6 +61,7 @@ const seedData = async () => {
     email: 'meena@nalamhealth.in',
     password: 'asha1234',
     role: 'asha_worker',
+    ashaWorkerId: 'ASHA-101',
     phone: '9876543210',
     village: 'Mathur',
     district: 'Krishnagiri',

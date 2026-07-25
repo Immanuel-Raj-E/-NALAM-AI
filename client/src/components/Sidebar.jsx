@@ -88,8 +88,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             <div style={{ color: 'white', fontSize: 14, fontWeight: 600, marginBottom: 2 }}>
               {user?.name}
             </div>
-            <div style={{ color: '#4ade80', fontSize: 11, fontWeight: 500 }}>
-              ASHA Worker · {user?.village || 'Mathur'}
+            <div style={{ color: '#4ade80', fontSize: 11, fontWeight: 600 }}>
+              ASHA Worker ({user?.ashaWorkerId || 'ASHA-101'}) · {user?.village || 'Mathur'}
             </div>
           </div>
         )}
