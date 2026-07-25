@@ -28,6 +28,7 @@ export default function ReportsPage() {
     try {
       const res = await reportAPI.create(fd);
       setReports(prev => [res.data.data, ...prev]);
+      setExpandedId(res.data.data._id); // Instant AI Summary focus
       setShowModal(false);
       setFile(null);
       setForm({ patient: '', reportName: '', reportType: 'Blood Test', reportDate: new Date().toISOString().split('T')[0] });
@@ -87,6 +88,13 @@ export default function ReportsPage() {
                       </button>
                     </div>
                   </div>
+
+                  {/* Direct AI Summary Snippet */}
+                  {r.aiSummary && (
+                    <div style={{ background: '#f0fdf4', padding: '10px 14px', borderRadius: 8, border: '1px solid #bbf7d0', marginBottom: 10, fontSize: 13, color: '#166534' }}>
+                      <strong>🤖 Instant AI Summary:</strong> {r.aiSummary}
+                    </div>
+                  )}
 
                   {/* Abnormal values */}
                   {r.abnormalValues?.length > 0 && (
