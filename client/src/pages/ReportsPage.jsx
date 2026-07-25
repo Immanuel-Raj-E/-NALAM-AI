@@ -106,8 +106,24 @@ export default function ReportsPage() {
 
                 {expandedId === r._id && (
                   <div style={{ borderTop: '1px solid #f1f5f9', padding: 20, background: '#f8fafc' }}>
+                    {/* ECG AI Diagnostic Card */}
+                    {r.ecgAnalysis && (
+                      <div style={{ background: '#faf5ff', borderRadius: 12, padding: 16, marginBottom: 16, border: '1px solid #c084fc' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#7e22ce', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          🫀 EfficientNet-B0 ECG Heartbeat AI Assessment
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12, background: 'white', padding: 12, borderRadius: 8, border: '1px solid #e9d5ff' }}>
+                          <div><span style={{ color: '#64748b', fontSize: 12 }}>Classification:</span><div style={{ fontWeight: 700, color: '#1e293b' }}>{r.ecgAnalysis.className} ({r.ecgAnalysis.classCode})</div></div>
+                          <div><span style={{ color: '#64748b', fontSize: 12 }}>Confidence:</span><div style={{ fontWeight: 700, color: '#7c3aed' }}>{r.ecgAnalysis.confidence}%</div></div>
+                          <div><span style={{ color: '#64748b', fontSize: 12 }}>Risk Level:</span><div style={{ fontWeight: 700 }}>{r.ecgAnalysis.riskLevel}</div></div>
+                        </div>
+                        <p style={{ fontSize: 13, color: '#374151', marginBottom: 6 }}><strong>Description:</strong> {r.ecgAnalysis.description}</p>
+                        <p style={{ fontSize: 13, color: '#6b21a8', fontWeight: 600 }}><strong>Recommendation:</strong> {r.ecgAnalysis.recommendation}</p>
+                      </div>
+                    )}
+
                     {/* Medical Report Description & Clinical Summary */}
-                    {r.aiSummary && (
+                    {r.aiSummary && !r.ecgAnalysis && (
                       <div style={{ background: 'white', borderRadius: 12, padding: 16, marginBottom: 16, border: '1px solid #bbf7d0' }}>
                         <div style={{ fontSize: 14, fontWeight: 700, color: '#16a34a', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                           <FileText size={16} /> Medical Report Description & Clinical Summary

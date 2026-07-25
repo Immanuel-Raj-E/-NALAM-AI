@@ -20,6 +20,14 @@ const medicalReportSchema = new mongoose.Schema(
         status: { type: String, enum: ['High', 'Low', 'Normal'] },
       },
     ],
+    ecgAnalysis: {
+      classCode: String,
+      className: String,
+      confidence: Number,
+      riskLevel: String,
+      description: String,
+      recommendation: String,
+    },
     processingStatus: { type: String, enum: ['pending', 'processing', 'completed', 'failed'], default: 'pending' },
   },
   { timestamps: true }
