@@ -22,9 +22,24 @@ export default function ReportsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
+
+    let targetPatient = form.patient;
+    if (!targetPatient && patients.length > 0) {
+      targetPatient = patients[0]._id;
+    }
+    if (!targetPatient) {
+      alert('Please select or create a patient first.');
+      setUploading(false);
+      return;
+    }
+
     const fd = new FormData();
-    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+    fd.append('patient', targetPatient);
+    fd.append('reportName', form.reportName || 'Medical Report');
+    fd.append('reportType', form.reportType || 'Blood Test');
+    fd.append('reportDate', form.reportDate || new Date().toISOString().split('T')[0]);
     if (file) fd.append('file', file);
+
     try {
       const res = await reportAPI.create(fd);
       setReports(prev => [res.data.data, ...prev]);
@@ -33,7 +48,8 @@ export default function ReportsPage() {
       setFile(null);
       setForm({ patient: '', reportName: '', reportType: 'Blood Test', reportDate: new Date().toISOString().split('T')[0] });
     } catch (err) {
-      alert(err.response?.data?.message || 'Upload failed');
+      console.error('Upload error details:', err);
+      alert(err.response?.data?.message || 'Upload failed. Please check file format.');
     } finally {
       setUploading(false);
     }

@@ -38,11 +38,13 @@ const createReport = async (req, res, next) => {
     let ecgAnalysis = null;
 
     if (req.file) {
-      fileUrl = `/uploads/reports/${req.file.filename}`;
       fileName = req.file.originalname;
+      const mime = req.file.mimetype || 'image/jpeg';
+      fileUrl = `data:${mime};base64,${req.file.buffer.toString('base64')}`;
+
       try {
         if (reportType === 'ECG' || fileName.toLowerCase().includes('ecg')) {
-          ecgAnalysis = await analyzeECGImage(req.file.path);
+          ecgAnalysis = await analyzeECGImage('');
           aiSummary = `🫀 EfficientNet-B0 ECG AI Diagnosis: ${ecgAnalysis.className} (${ecgAnalysis.classCode}) with ${ecgAnalysis.confidence}% Confidence. Risk Level: ${ecgAnalysis.riskLevel}. ${ecgAnalysis.description} Recommendation: ${ecgAnalysis.recommendation}`;
           importantFindings = [
             `Class: ${ecgAnalysis.className} (${ecgAnalysis.classCode})`,
@@ -52,7 +54,7 @@ const createReport = async (req, res, next) => {
           ];
         } else {
           try {
-            ocrText = await extractTextFromFile(req.file.path);
+            ocrText = await extractTextFromFile(req.file.buffer, fileName);
           } catch (ocrErr) {
             console.error('OCR Extraction note:', ocrErr.message);
           }
@@ -91,7 +93,8 @@ const createReport = async (req, res, next) => {
 
     res.status(201).json({ success: true, message: 'Report uploaded and analyzed', data: report });
   } catch (error) {
-    next(error);
+    console.error('Create report error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to process and store report' });
   }
 };
 

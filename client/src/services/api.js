@@ -56,7 +56,7 @@ export const healthRecordAPI = {
 export const prescriptionAPI = {
   getAll: (params) => API.get('/prescriptions', { params }),
   getOne: (id) => API.get(`/prescriptions/${id}`),
-  create: (formData) => API.post('/prescriptions', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  create: (formData) => API.post('/prescriptions', formData),
   delete: (id) => API.delete(`/prescriptions/${id}`),
 };
 
@@ -64,7 +64,7 @@ export const prescriptionAPI = {
 export const reportAPI = {
   getAll: (params) => API.get('/reports', { params }),
   getOne: (id) => API.get(`/reports/${id}`),
-  create: (formData) => API.post('/reports', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  create: (formData) => API.post('/reports', formData),
   delete: (id) => API.delete(`/reports/${id}`),
 };
 
