@@ -293,7 +293,7 @@ export default function ReportsPage() {
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
                 <button type="submit" className="btn-primary" disabled={uploading}>
-                  {uploading ? <><div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />Processing OCR...</> : <><Upload size={15} />Upload & Analyze</>}
+                  {uploading ? <><div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />Processing OCR & Analyzing Image...</> : <><Upload size={15} />Upload & Analyze</>}
                 </button>
               </div>
             </form>
