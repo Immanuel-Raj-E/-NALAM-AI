@@ -48,29 +48,17 @@ NALAM AI is an integrated healthcare ecosystem designed to empower **ASHA (Accre
 
 | Category | Technology |
 |----------|------------|
-| **Frontend** | React.js, Vite, Tailwind CSS, Lucide Icons, JavaScript (ES6+) |
+| **Frontend** | React.js, Vite, Tailwind CSS, JavaScript (ES6+) |
 | **Backend** | Node.js, Express.js, Serverless API |
-| **Database** | MongoDB Atlas, Mongoose ODM |
-| **AI / Deep Learning** | PyTorch, EfficientNet-B0, Google Gemini API, Tesseract OCR |
+| **Database** | MongoDB Atlas |
 | **Workflow Automation** | n8n Webhook Cloud Automation |
-| **Authentication** | JWT (JSON Web Tokens), Bcryptjs |
+| **Authentication** | JWT (JSON Web Tokens) |
 | **Deployment** | Vercel Serverless Platform |
 
 ---
 
-## 🫀 AI & Deep Learning Models
-
-### 1. EfficientNet-B0 ECG Heartbeat Classification (`PyTorch`)
-Lightweight Convolutional Neural Network (CNN) trained to classify 6 heartbeat classes:
-- **`N` (Normal Beat):** 🟢 Low Risk – Normal sinus rhythm.
-- **`F` (Fusion Beat):** 🟡 Moderate Risk – Fusion of normal & ventricular beats.
-- **`M` (Myocardial Beat):** 🟡 Moderate Risk – Myocardial abnormality.
-- **`Q` (Unknown Beat):** 🟠 Medium Risk – Unclassifiable rhythm.
-- **`S` (Supraventricular Ectopic Beat):** 🟠 Medium Risk – Supraventricular arrhythmia.
-- **`V` (Ventricular Ectopic Beat):** 🔴 High Risk – Ventricular arrhythmia (PVC).
-
-### 2. Medical Report & OCR Analysis
-- Extracts text from diagnostic reports via OCR.
+### 2. Medical Report  Analysis
+- Extracts text from diagnostic reports 
 - Generates instant clinical summaries, abnormal value alerts, and precautionary recommendations.
 
 ---
