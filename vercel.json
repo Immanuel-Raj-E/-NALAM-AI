@@ -1,6 +1,10 @@
 {
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
+  "env": {
+    "MONGO_URI": "mongodb+srv://imman8046_db_user:immanuel123@cluster0.qdb0waq.mongodb.net/nalam_ai?retryWrites=true&w=majority",
+    "JWT_SECRET": "nalam_ai_super_secret_jwt_key_2024"
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",

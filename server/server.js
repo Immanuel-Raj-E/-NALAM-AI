@@ -25,10 +25,15 @@ const hospitalRoutes = require('./src/routes/hospitals');
 const app = express();
 
 // Connect to MongoDB
-connectDB();
+connectDB().catch(err => console.error('Initial DB Connect Note:', err.message));
 app.use(async (req, res, next) => {
-  await connectDB();
-  next();
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Database middleware connect error:', err.message);
+    res.status(500).json({ success: false, message: 'Database connection establishing. Please try signing in again.' });
+  }
 });
 
 // Security middleware
