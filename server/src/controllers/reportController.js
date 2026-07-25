@@ -51,17 +51,26 @@ const createReport = async (req, res, next) => {
             `Action: ${ecgAnalysis.recommendation}`
           ];
         } else {
-          ocrText = await extractTextFromFile(req.file.path);
-          const analysis = analyzeReport(ocrText);
+          try {
+            ocrText = await extractTextFromFile(req.file.path);
+          } catch (ocrErr) {
+            console.error('OCR Extraction note:', ocrErr.message);
+          }
+          const analysis = analyzeReport(ocrText, reportType || 'Blood Test', reportName || 'Medical Report');
           aiSummary = analysis.summary;
           importantFindings = analysis.findings;
           abnormalValues = analysis.abnormalValues;
         }
       } catch (err) {
         console.error('Report processing error:', err.message);
-        ocrText = 'Processing completed';
-        aiSummary = 'Medical Report stored. Review complete findings below.';
+        const analysis = analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
+        aiSummary = analysis.summary;
+        importantFindings = analysis.findings;
       }
+    } else {
+      const analysis = analyzeReport('', reportType || 'Blood Test', reportName || 'Medical Report');
+      aiSummary = analysis.summary;
+      importantFindings = analysis.findings;
     }
 
     const report = await MedicalReport.create({

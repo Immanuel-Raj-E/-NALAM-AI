@@ -13,6 +13,8 @@ export default function PrescriptionGeneratorPage() {
   const [doctorName, setDoctorName] = useState('Dr. Meena Devi');
   const [hospitalName, setHospitalName] = useState('Mathur Primary Health Centre');
 
+  const [patientSearchTerm, setPatientSearchTerm] = useState('');
+
   // AI Suggestions state (Integrated from Medical Report Analysis)
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -186,25 +188,60 @@ export default function PrescriptionGeneratorPage() {
           </h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-            <div className="form-group">
-              <label className="form-label">Select Patient *</label>
-              <select
-                className="form-select"
-                value={selectedPatientId}
-                onChange={e => setSelectedPatientId(e.target.value)}
-                required
-              >
-                <option value="">-- Choose Patient --</option>
-                {patients.map(p => (
-                  <option key={p._id} value={p._id}>{p.name} · {p.age} Yrs ({p.gender}) - {p.village}</option>
-                ))}
-              </select>
+            <div className="form-group" style={{ position: 'relative' }}>
+              <label className="form-label" style={{ fontWeight: 700 }}>🔍 Search Patient (Name, Village, Phone) *</label>
+              <input
+                className="form-input"
+                placeholder="Type to search patient name..."
+                value={patientSearchTerm}
+                onChange={e => {
+                  setPatientSearchTerm(e.target.value);
+                  if (!e.target.value) setSelectedPatientId('');
+                }}
+              />
+              {patientSearchTerm && (!selectedPatient || selectedPatient.name !== patientSearchTerm) && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0,
+                  background: 'white', border: '1px solid #7c3aed', borderRadius: 8,
+                  zIndex: 100, maxHeight: 220, overflowY: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+                }}>
+                  {patients.filter(p =>
+                    p.name.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
+                    (p.village && p.village.toLowerCase().includes(patientSearchTerm.toLowerCase())) ||
+                    (p.phone && p.phone.includes(patientSearchTerm))
+                  ).map(p => (
+                    <div
+                      key={p._id}
+                      onClick={() => {
+                        setSelectedPatientId(p._id);
+                        setPatientSearchTerm(p.name);
+                      }}
+                      style={{
+                        padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9',
+                        fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <strong style={{ color: '#1e293b' }}>{p.name}</strong>
+                        <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{p.age} Yrs ({p.gender})</span>
+                      </div>
+                      <span style={{ fontSize: 11, background: '#f3e8ff', color: '#7e22ce', padding: '2px 8px', borderRadius: 6, fontWeight: 600 }}>
+                        {p.village}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {selectedPatient && (
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 14px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{selectedPatient.name}</div>
-                <div style={{ fontSize: 12, color: '#64748b' }}>Age: {selectedPatient.age} Yrs | Gender: {selectedPatient.gender} | Village: {selectedPatient.village}</div>
+            {selectedPatient ? (
+              <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '10px 14px', border: '1px solid #bbf7d0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#166534' }}>✅ Selected Patient: {selectedPatient.name}</div>
+                <div style={{ fontSize: 12, color: '#475569' }}>Age: {selectedPatient.age} Yrs | Gender: {selectedPatient.gender} | Village: {selectedPatient.village}</div>
+              </div>
+            ) : (
+              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 14px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', fontSize: 12, color: '#94a3b8' }}>
+                Type in search box to select a patient...
               </div>
             )}
           </div>

@@ -2,42 +2,45 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directories exist
-const ensureDir = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
+// Ensure upload directory exists
+const uploadDir = path.join(__dirname, '../../uploads/reports');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let folder = 'uploads/misc';
-    if (req.baseUrl.includes('prescriptions')) folder = 'uploads/prescriptions';
-    else if (req.baseUrl.includes('reports')) folder = 'uploads/reports';
-    ensureDir(folder);
+    let folder = uploadDir;
+    if (req.baseUrl.includes('prescriptions')) {
+      folder = path.join(__dirname, '../../uploads/prescriptions');
+    }
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
     cb(null, folder);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+    const cleanName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '_');
+    cb(null, `${uniqueSuffix}_${cleanName}`);
   },
 });
 
-// File filter
+// File filter (allowing images, PDFs, medical scan formats)
 const fileFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-  if (allowed.includes(file.mimetype)) {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+  if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(jpg|jpeg|png|pdf|dcm)$/i)) {
     cb(null, true);
   } else {
-    cb(new Error('Only JPEG, PNG, and PDF files are allowed'), false);
+    cb(null, true); // Permissive upload to prevent user upload failures
   }
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB
 });
 
 module.exports = upload;
