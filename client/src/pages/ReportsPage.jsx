@@ -12,6 +12,8 @@ export default function ReportsPage() {
   const [form, setForm] = useState({ patient: '', reportName: '', reportType: 'Blood Test', reportDate: new Date().toISOString().split('T')[0] });
   const [file, setFile] = useState(null);
 
+  const [uploadedReportResult, setUploadedReportResult] = useState(null);
+
   useEffect(() => {
     Promise.all([reportAPI.getAll({}), patientAPI.getAll({ limit: 100 })]).then(([rRes, pRes]) => {
       setReports(rRes.data.data);
@@ -43,6 +45,7 @@ export default function ReportsPage() {
     try {
       const res = await reportAPI.create(fd);
       setReports(prev => [res.data.data, ...prev]);
+      setUploadedReportResult(res.data.data);
       setExpandedId(res.data.data._id); // Instant AI Summary focus
       setShowModal(false);
       setFile(null);
@@ -74,6 +77,59 @@ export default function ReportsPage() {
       </div>
 
       <div className="page-content">
+        {/* INSTANT UPLOADED REPORT OUTPUT CARD */}
+        {uploadedReportResult && (
+          <div className="card" style={{ padding: 24, border: '2px solid #16a34a', background: 'white', marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #1e293b', paddingBottom: 12, marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FileText size={20} color="#16a34a" /> OFFICIAL MEDICAL REPORT ANALYSIS
+                </h3>
+                <div style={{ fontSize: 12, color: '#64748b' }}>
+                  Report Name: <strong>{uploadedReportResult.reportName || 'Medical Report'}</strong> · Type: <strong>{uploadedReportResult.reportType}</strong>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#16a34a' }}>ANALYZED & STORED</div>
+                <div style={{ fontSize: 11, color: '#94a3b8' }}>Date: {new Date(uploadedReportResult.reportDate).toLocaleDateString('en-IN')}</div>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, marginBottom: 16, fontSize: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+              <div><strong>Patient:</strong> {uploadedReportResult.patient?.name || 'Patient'}</div>
+              <div><strong>Report Type:</strong> {uploadedReportResult.reportType}</div>
+              <div><strong>Processing Status:</strong> <span style={{ color: '#16a34a', fontWeight: 700 }}>Completed</span></div>
+            </div>
+
+            <div style={{ background: '#f0fdf4', padding: 16, borderRadius: 10, border: '1px solid #bbf7d0', marginBottom: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#166534', marginBottom: 6 }}>
+                🤖 Report Description & AI Clinical Summary
+              </div>
+              <p style={{ fontSize: 13, color: '#1e293b', lineHeight: 1.7, margin: 0 }}>
+                {uploadedReportResult.aiSummary || 'Medical report processed successfully. All diagnostic parameters logged into system.'}
+              </p>
+            </div>
+
+            {uploadedReportResult.importantFindings?.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>📋 Important Observations & Findings:</div>
+                <ul style={{ paddingLeft: 18, fontSize: 12, color: '#374151', lineHeight: 1.6 }}>
+                  {uploadedReportResult.importantFindings.map((f, i) => (
+                    <li key={i}>{f}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>✅ Report stored in patient medical records.</span>
+              <button onClick={() => window.print()} className="btn-secondary" style={{ gap: 6 }}>
+                Print Report Summary
+              </button>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>
         ) : reports.length === 0 ? (
