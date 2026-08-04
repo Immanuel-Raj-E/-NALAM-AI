@@ -179,8 +179,6 @@ export default function LoginPage() {
               {loading ? <><div className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} />Signing in...</> : `Sign In as ${roleTab === 'asha_worker' ? 'ASHA Worker' : roleTab === 'patient' ? 'Patient' : 'System Admin'}`}
             </button>
           </form>
-
-
         </div>
       </div>
     </div>
