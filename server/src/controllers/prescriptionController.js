@@ -143,4 +143,27 @@ const deletePrescription = async (req, res, next) => {
   }
 };
 
-module.exports = { getPrescriptions, getPrescription, createPrescription, deletePrescription };
+const sendPrescriptionWhatsapp = async (req, res, next) => {
+  try {
+    const prescription = await Prescription.findById(req.params.id);
+    if (!prescription) return res.status(404).json({ success: false, message: 'Prescription not found' });
+
+    const patientObj = await Patient.findById(prescription.patient);
+    if (!patientObj) return res.status(404).json({ success: false, message: 'Patient not found' });
+    if (!patientObj.phone) return res.status(400).json({ success: false, message: 'Patient does not have a registered phone number' });
+
+    const { sendPrescriptionNotification } = require('../services/twilioService');
+    const twilioRes = await sendPrescriptionNotification(patientObj, prescription);
+
+    if (twilioRes.success) {
+      res.json({ success: true, message: 'WhatsApp notification sent successfully', sid: twilioRes.sid });
+    } else {
+      res.status(500).json({ success: false, message: twilioRes.error || 'Failed to send WhatsApp notification' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getPrescriptions, getPrescription, createPrescription, deletePrescription, sendPrescriptionWhatsapp };
+

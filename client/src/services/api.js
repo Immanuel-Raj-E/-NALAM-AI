@@ -58,6 +58,7 @@ export const prescriptionAPI = {
   getOne: (id) => API.get(`/prescriptions/${id}`),
   create: (formData) => API.post('/prescriptions', formData),
   delete: (id) => API.delete(`/prescriptions/${id}`),
+  sendWhatsapp: (id) => API.post(`/prescriptions/${id}/send-whatsapp`),
 };
 
 // Medical Reports

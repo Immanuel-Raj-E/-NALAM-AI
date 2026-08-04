@@ -31,6 +31,8 @@ export default function PrescriptionGeneratorPage() {
   const [prescriptionMedicines, setPrescriptionMedicines] = useState([]);
   const [issuedRx, setIssuedRx] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+  const [whatsappStatus, setWhatsappStatus] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -165,6 +167,22 @@ export default function PrescriptionGeneratorPage() {
       alert(err.response?.data?.message || 'Failed to issue prescription');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleSendWhatsapp = async () => {
+    if (!issuedRx || !issuedRx.id) return;
+    setSendingWhatsapp(true);
+    setWhatsappStatus('');
+    try {
+      await prescriptionAPI.sendWhatsapp(issuedRx.id);
+      setWhatsappStatus('Sent successfully!');
+    } catch (err) {
+      console.error(err);
+      setWhatsappStatus('Failed to send');
+      alert(err.response?.data?.message || 'Failed to send WhatsApp message.');
+    } finally {
+      setSendingWhatsapp(false);
     }
   };
 
@@ -439,8 +457,22 @@ export default function PrescriptionGeneratorPage() {
                 </ul>
               </div>
 
-              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>Sent successfully via Twilio</span>
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    onClick={handleSendWhatsapp}
+                    disabled={sendingWhatsapp}
+                    className="btn-primary"
+                    style={{ background: '#25d366', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', fontSize: 11, fontWeight: 700 }}
+                  >
+                    📱 {sendingWhatsapp ? 'Sending...' : 'Send to Patient WhatsApp'}
+                  </button>
+                  {whatsappStatus && (
+                    <span style={{ fontSize: 11, color: whatsappStatus.includes('Failed') ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+                      {whatsappStatus}
+                    </span>
+                  )}
+                </div>
                 <button onClick={() => window.print()} className="btn-secondary" style={{ gap: 4, padding: '6px 12px', fontSize: 11 }}>
                   <Printer size={12} /> Print Rx
                 </button>
