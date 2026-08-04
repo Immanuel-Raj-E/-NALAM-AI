@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { patientAPI, medicineAPI, prescriptionAPI, aiAPI } from '../services/api';
-import { Pill, Search, Plus, Trash2, Printer, FileText, Check, AlertCircle, Sparkles, User, HeartPulse, ShieldCheck } from 'lucide-react';
+import { Pill, Plus, Trash2, Printer, Check, Sparkles, User, HeartPulse } from 'lucide-react';
 
 export default function PrescriptionGeneratorPage() {
   const [patients, setPatients] = useState([]);
@@ -169,279 +169,286 @@ export default function PrescriptionGeneratorPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', paddingBottom: 60 }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 60 }}>
       {/* Title */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Pill size={24} color="#7c3aed" /> ASHA Digital Prescription Generator
+      <div style={{ marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+        <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Pill size={22} color="#7c3aed" /> Prescription Generator
         </h2>
-        <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
-          Enter minimal patient details & symptoms to get instant AI treatment suggestions (Medical Report Analysis model) and issue prescriptions.
+        <p style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>
+          Select a patient, input symptoms for AI suggestions, and compose a digital prescription.
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }}>
-        {/* STEP 1: MINIMAL PATIENT & SYMPTOMS SELECTION */}
-        <div className="card" style={{ padding: 20, border: '1fr solid #e2e8f0', background: 'white' }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <User size={18} color="#7c3aed" /> Step 1: Select Patient & Symptoms
-          </h3>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-            <div className="form-group" style={{ position: 'relative' }}>
-              <label className="form-label" style={{ fontWeight: 700 }}>🔍 Search Patient (Name, Village, Phone) *</label>
-              <input
-                className="form-input"
-                placeholder="Type to search patient name..."
-                value={patientSearchTerm}
-                onChange={e => {
-                  setPatientSearchTerm(e.target.value);
-                  if (!e.target.value) setSelectedPatientId('');
-                }}
-              />
-              {patientSearchTerm && (!selectedPatient || selectedPatient.name !== patientSearchTerm) && (
-                <div style={{
-                  position: 'absolute', top: '100%', left: 0, right: 0,
-                  background: 'white', border: '1px solid #7c3aed', borderRadius: 8,
-                  zIndex: 100, maxHeight: 220, overflowY: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
-                }}>
-                  {patients.filter(p =>
-                    p.name.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
-                    (p.village && p.village.toLowerCase().includes(patientSearchTerm.toLowerCase())) ||
-                    (p.phone && p.phone.includes(patientSearchTerm))
-                  ).map(p => (
-                    <div
-                      key={p._id}
-                      onClick={() => {
-                        setSelectedPatientId(p._id);
-                        setPatientSearchTerm(p.name);
-                      }}
-                      style={{
-                        padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9',
-                        fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                      }}
-                    >
-                      <div>
-                        <strong style={{ color: '#1e293b' }}>{p.name}</strong>
-                        <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{p.age} Yrs ({p.gender})</span>
-                      </div>
-                      <span style={{ fontSize: 11, background: '#f3e8ff', color: '#7e22ce', padding: '2px 8px', borderRadius: 6, fontWeight: 600 }}>
-                        {p.village}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {selectedPatient ? (
-              <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '10px 14px', border: '1px solid #bbf7d0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#166534' }}>✅ Selected Patient: {selectedPatient.name}</div>
-                <div style={{ fontSize: 12, color: '#475569' }}>Age: {selectedPatient.age} Yrs | Gender: {selectedPatient.gender} | Village: {selectedPatient.village}</div>
-              </div>
-            ) : (
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 14px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', fontSize: 12, color: '#94a3b8' }}>
-                Type in search box to select a patient...
-              </div>
-            )}
-          </div>
-
-          <div className="form-group" style={{ marginBottom: 16 }}>
-            <label className="form-label">Type Patient Symptoms (Plain Text) *</label>
-            <textarea
-              className="form-input"
-              rows={2}
-              placeholder="e.g. High fever, severe headache, running nose, body pain, cough..."
-              value={symptomsInput}
-              onChange={e => setSymptomsInput(e.target.value)}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGetAiSuggestions}
-            disabled={loadingAi}
-            className="btn-primary"
-            style={{ background: '#7c3aed', gap: 8 }}
-          >
-            <Sparkles size={16} /> {loadingAi ? 'Analyzing Symptoms...' : 'Get AI Treatment Suggestions'}
-          </button>
-        </div>
-
-        {/* STEP 2: AI CLINICAL SUGGESTIONS (Integrated from Medical Report Analysis) */}
-        {aiSuggestions && (
-          <div className="card" style={{ padding: 20, border: '1px solid #a78bfa', background: '#faf5ff' }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#6b21a8', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <HeartPulse size={18} color="#9333ea" /> AI Clinical Assessment (Medical Report Analysis Engine)
+      {/* Two-Column Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 24 }}>
+        
+        {/* LEFT COLUMN: Symptom Assessment & AI Advice */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Card 1: Patient and Symptoms Selection */}
+          <div className="card" style={{ padding: 20, background: 'white', borderRadius: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <User size={16} color="#7c3aed" /> Patient & Symptoms
             </h3>
 
-            <div style={{ background: 'white', padding: 14, borderRadius: 8, border: '1px solid #e9d5ff', marginBottom: 14 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>
-                Possible Condition / Working Diagnosis: <span style={{ color: '#7c3aed' }}>{aiSuggestions.workingDiagnosis}</span>
-              </div>
-            </div>
-
-            {/* Suggested Medicines */}
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#4c1d95', marginBottom: 8 }}>Suggested Medicines (Click '+ Add to Rx' to add):</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
-                {aiSuggestions.recommendedMedicines?.map((m, idx) => (
-                  <div key={idx} style={{ background: 'white', padding: '10px 14px', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{m.name}</div>
-                      <div style={{ fontSize: 12, color: '#64748b' }}>Dose: {m.dosage} | Frequency: {m.frequency} | Duration: {m.duration}</div>
-                    </div>
-                    <button
-                      onClick={() => addAiMedicineToRx(m)}
-                      style={{ background: '#7c3aed', color: 'white', border: 'none', borderRadius: 6, padding: '6px 12px', cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}
-                    >
-                      <Plus size={14} /> Add to Rx
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Precautionary Measures */}
-            {aiSuggestions.precautions?.length > 0 && (
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#4c1d95', marginBottom: 6 }}>Precautionary & Lifestyle Measures:</div>
-                <ul style={{ paddingLeft: 18, fontSize: 12, color: '#475569', lineHeight: 1.6 }}>
-                  {aiSuggestions.precautions.map((p, i) => (
-                    <li key={i}>{p}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* STEP 3: INVENTORY MEDICINE SELECTOR & FINAL PRESCRIPTION TABLE */}
-        <div className="card" style={{ padding: 20, border: '1px solid #e2e8f0', background: 'white' }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Pill size={18} color="#7c3aed" /> Step 2: Add Medicines & Complete Prescription
-          </h3>
-
-          {/* Database Inventory Search Bar */}
-          <div style={{ background: '#f8fafc', padding: 14, borderRadius: 8, border: '1px solid #e2e8f0', marginBottom: 16 }}>
-            <label className="form-label" style={{ fontWeight: 700 }}>Search & Select Medicine from Database Inventory</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px 120px auto', gap: 10, alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div className="form-group" style={{ position: 'relative' }}>
+                <label className="form-label" style={{ fontWeight: 600, fontSize: 12 }}>Search Patient *</label>
                 <input
                   className="form-input"
-                  placeholder="Search medicine name..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
+                  placeholder="Search name, village, or phone..."
+                  value={patientSearchTerm}
+                  onChange={e => {
+                    setPatientSearchTerm(e.target.value);
+                    if (!e.target.value) setSelectedPatientId('');
+                  }}
                 />
-                {searchTerm && !selectedMed && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid #cbd5e1', borderRadius: 8, zIndex: 50, maxHeight: 180, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                    {medicines.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase())).map(m => (
+                {patientSearchTerm && (!selectedPatient || selectedPatient.name !== patientSearchTerm) && (
+                  <div style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0,
+                    background: 'white', border: '1px solid #7c3aed', borderRadius: 10,
+                    zIndex: 100, maxHeight: 220, overflowY: 'auto', boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+                  }}>
+                    {patients.filter(p =>
+                      p.name.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
+                      (p.village && p.village.toLowerCase().includes(patientSearchTerm.toLowerCase())) ||
+                      (p.phone && p.phone.includes(patientSearchTerm))
+                    ).map(p => (
                       <div
-                        key={m._id}
-                        onClick={() => { setSelectedMed(m); setSearchTerm(m.name); }}
-                        style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', fontSize: 12, display: 'flex', justifyContent: 'space-between' }}
+                        key={p._id}
+                        onClick={() => {
+                          setSelectedPatientId(p._id);
+                          setPatientSearchTerm(p.name);
+                        }}
+                        style={{
+                          padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9',
+                          fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                        }}
                       >
-                        <strong>{m.name}</strong>
-                        <span style={{ color: m.quantity <= m.lowStockThreshold ? '#dc2626' : '#16a34a' }}>Stock: {m.quantity} {m.unit}</span>
+                        <div>
+                          <strong style={{ color: '#1e293b' }}>{p.name}</strong>
+                          <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>{p.age} Yrs ({p.gender})</span>
+                        </div>
+                        <span style={{ fontSize: 11, background: '#f3e8ff', color: '#7e22ce', padding: '2px 8px', borderRadius: 6, fontWeight: 600 }}>
+                          {p.village}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
 
-              <input className="form-input" placeholder="Dose (e.g. 10 Tablets)" value={dose} onChange={e => setDose(e.target.value)} />
-              <input className="form-input" placeholder="Frequency" value={frequency} onChange={e => setFrequency(e.target.value)} />
-              <input className="form-input" placeholder="Duration" value={duration} onChange={e => setDuration(e.target.value)} />
+              {selectedPatient ? (
+                <div style={{ background: '#f0fdf4', borderRadius: 10, padding: '10px 14px', border: '1px solid #bbf7d0' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#166534' }}>Selected: {selectedPatient.name}</div>
+                  <div style={{ fontSize: 11, color: '#475569', marginTop: 2 }}>{selectedPatient.age} Yrs · {selectedPatient.gender} · {selectedPatient.village}</div>
+                </div>
+              ) : (
+                <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 14px', border: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8' }}>
+                  Type to select a patient...
+                </div>
+              )}
 
-              <button type="button" onClick={addInventoryMedToRx} className="btn-primary" style={{ background: '#7c3aed' }}>
-                <Plus size={16} /> Add
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, fontSize: 12 }}>Patient Symptoms *</label>
+                <textarea
+                  className="form-input"
+                  rows={2}
+                  placeholder="Describe patient symptoms..."
+                  value={symptomsInput}
+                  onChange={e => setSymptomsInput(e.target.value)}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGetAiSuggestions}
+                disabled={loadingAi}
+                className="btn-primary"
+                style={{ background: '#7c3aed', gap: 6, justifyContent: 'center', width: '100%', fontSize: 13 }}
+              >
+                <Sparkles size={14} /> {loadingAi ? 'Analyzing Symptoms...' : 'Get AI Treatment Suggestions'}
               </button>
             </div>
           </div>
 
-          {/* Active Prescription Items Table */}
-          <div style={{ marginBottom: 20 }}>
-            <h4 style={{ fontSize: 14, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Prescribed Medicines ({prescriptionMedicines.length})</h4>
-            {prescriptionMedicines.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 30, background: '#f8fafc', borderRadius: 8, color: '#94a3b8', fontSize: 13 }}>
-                No medicines added yet. Use AI suggestions or search inventory above to add medicines.
-              </div>
-            ) : (
-              <div className="table-container">
-                <table>
-                  <thead>
-                    <tr><th>Medicine</th><th>Quantity / Dosage</th><th>Frequency</th><th>Duration</th><th>Action</th></tr>
-                  </thead>
-                  <tbody>
-                    {prescriptionMedicines.map((m, idx) => (
-                      <tr key={idx}>
-                        <td><strong>{m.name}</strong></td>
-                        <td>{m.dosage}</td>
-                        <td>{m.frequency}</td>
-                        <td>{m.duration}</td>
-                        <td>
-                          <button onClick={() => removeMedicine(idx)} style={{ border: 'none', background: '#fee2e2', color: '#dc2626', padding: '4px 8px', borderRadius: 6, cursor: 'pointer' }}>
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+          {/* Card 2: AI Clinical Suggestions */}
+          {aiSuggestions && (
+            <div className="card" style={{ padding: 20, border: '1px solid #ddd6fe', background: '#faf5ff', borderRadius: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#6b21a8', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <HeartPulse size={16} color="#9333ea" /> AI Clinical Assessment
+              </h3>
 
-          {/* Issue & Save Prescription Button */}
-          <button
-            onClick={handleIssuePrescription}
-            disabled={submitting}
-            className="btn-primary"
-            style={{ width: '100%', justifyContent: 'center', padding: '14px', background: '#16a34a', fontSize: 15, fontWeight: 700 }}
-          >
-            <Check size={18} /> {submitting ? 'Saving Prescription & Updating Stock...' : 'Issue & Save Digital Prescription'}
-          </button>
+              <div style={{ background: 'white', padding: '10px 14px', borderRadius: 10, border: '1px solid #e9d5ff', marginBottom: 12 }}>
+                <div style={{ fontSize: 12, color: '#4c1d95' }}>Possible Condition:</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#7c3aed', marginTop: 2 }}>{aiSuggestions.workingDiagnosis}</div>
+              </div>
+
+              {/* Suggested Medicines */}
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#4c1d95', marginBottom: 6 }}>Suggested Medicines:</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {aiSuggestions.recommendedMedicines?.map((m, idx) => (
+                    <div key={idx} style={{ background: 'white', padding: '10px 12px', borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#1e293b' }}>{m.name}</div>
+                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{m.dosage} · {m.frequency} · {m.duration}</div>
+                      </div>
+                      <button
+                        onClick={() => addAiMedicineToRx(m)}
+                        style={{ background: '#7c3aed', color: 'white', border: 'none', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 2 }}
+                      >
+                        <Plus size={12} /> Add to Rx
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Precautionary Measures */}
+              {aiSuggestions.precautions?.length > 0 && (
+                <div style={{ borderTop: '1px solid #e9d5ff', paddingTop: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#4c1d95', marginBottom: 4 }}>Precautions & Lifestyle:</div>
+                  <ul style={{ paddingLeft: 16, fontSize: 11, color: '#475569', lineHeight: 1.5 }}>
+                    {aiSuggestions.precautions.map((p, i) => (
+                      <li key={i}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* ISSUED PRESCRIPTION PREVIEW CARD */}
-        {issuedRx && (
-          <div className="card" style={{ padding: 24, border: '2px solid #16a34a', background: 'white' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #1e293b', paddingBottom: 12, marginBottom: 16 }}>
-              <div>
-                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a' }}>OFFICIAL MOCK PRESCRIPTION</h3>
-                <div style={{ fontSize: 12, color: '#64748b' }}>{issuedRx.hospitalName} · Issued by {issuedRx.doctorName}</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed' }}>{issuedRx.id}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8' }}>Date: {issuedRx.date}</div>
+        {/* RIGHT COLUMN: Prescription Composer & Preview */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Card 3: Prescription Composer */}
+          <div className="card" style={{ padding: 20, background: 'white', borderRadius: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Pill size={16} color="#7c3aed" /> Prescription Composer
+            </h3>
+
+            {/* Database Inventory Search Bar */}
+            <div style={{ background: '#f8fafc', padding: 12, borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 8 }}>Search & Add Medicines from Inventory</div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    className="form-input"
+                    placeholder="Search medicine name..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm && !selectedMed && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', border: '1px solid #cbd5e1', borderRadius: 10, zIndex: 50, maxHeight: 180, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                      {medicines.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase())).map(m => (
+                        <div
+                          key={m._id}
+                          onClick={() => { setSelectedMed(m); setSearchTerm(m.name); }}
+                          style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', fontSize: 12, display: 'flex', justifyContent: 'space-between' }}
+                        >
+                          <strong>{m.name}</strong>
+                          <span style={{ color: m.quantity <= m.lowStockThreshold ? '#dc2626' : '#16a34a' }}>Stock: {m.quantity} {m.unit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                  <input className="form-input" placeholder="Dose (e.g. 10 Tabs)" value={dose} onChange={e => setDose(e.target.value)} />
+                  <input className="form-input" placeholder="Frequency" value={frequency} onChange={e => setFrequency(e.target.value)} />
+                  <input className="form-input" placeholder="Duration" value={duration} onChange={e => setDuration(e.target.value)} />
+                </div>
+
+                <button type="button" onClick={addInventoryMedToRx} className="btn-primary" style={{ background: '#7c3aed', padding: '8px 12px', fontSize: 12, width: '100%', justifyContent: 'center' }}>
+                  <Plus size={14} /> Add Medicine
+                </button>
               </div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, marginBottom: 16, fontSize: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
-              <div><strong>Patient:</strong> {issuedRx.patientName}</div>
-              <div><strong>Age / Gender:</strong> {issuedRx.patientAge} Yrs / {issuedRx.patientGender}</div>
-              <div><strong>Diagnosis:</strong> {issuedRx.diagnosisDescription}</div>
-            </div>
-
+            {/* Prescribed Medicines List */}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: '#1e293b' }}>Prescribed Medicines (Rx):</div>
-              <ul>
-                {issuedRx.medicines.map((m, i) => (
-                  <li key={i} style={{ fontSize: 13, marginBottom: 4 }}>
-                    <strong>{m.name}</strong> - {m.dosage} ({m.frequency}, {m.duration})
-                  </li>
-                ))}
-              </ul>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 8 }}>Prescribed Medicines ({prescriptionMedicines.length})</div>
+              {prescriptionMedicines.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: 24, background: '#f8fafc', borderRadius: 10, color: '#94a3b8', fontSize: 12, border: '1px dashed #cbd5e1' }}>
+                  No medicines added. Use AI suggestions or search inventory above.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {prescriptionMedicines.map((m, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>{m.name}</div>
+                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                          {m.dosage} · {m.frequency} · {m.duration}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeMedicine(idx)}
+                        style={{ border: 'none', background: '#fee2e2', color: '#dc2626', padding: 6, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>✅ Prescription saved to database. Inventory stock updated automatically.</span>
-              <button onClick={() => window.print()} className="btn-secondary" style={{ gap: 6 }}>
-                <Printer size={14} /> Print Rx
-              </button>
-            </div>
+            {/* Issue & Save Prescription Button */}
+            <button
+              onClick={handleIssuePrescription}
+              disabled={submitting}
+              className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center', padding: '12px', background: '#16a34a', fontSize: 14, fontWeight: 700 }}
+            >
+              <Check size={16} /> {submitting ? 'Issuing...' : 'Issue & Save Prescription'}
+            </button>
           </div>
-        )}
+
+          {/* Card 4: Prescription Preview */}
+          {issuedRx && (
+            <div className="card" style={{ padding: 20, border: '2px solid #16a34a', background: 'white', borderRadius: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid #1e293b', paddingBottom: 10, marginBottom: 12 }}>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0f172a' }}>OFFICIAL PRESCRIPTION</h3>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>{issuedRx.hospitalName}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed' }}>{issuedRx.id}</div>
+                  <div style={{ fontSize: 10, color: '#94a3b8' }}>{issuedRx.date}</div>
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 11, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div><strong>Patient:</strong> {issuedRx.patientName} ({issuedRx.patientAge} Yrs / {issuedRx.patientGender})</div>
+                <div><strong>Diagnosis:</strong> {issuedRx.diagnosisDescription}</div>
+                <div><strong>Issued By:</strong> {issuedRx.doctorName}</div>
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6, color: '#1e293b' }}>Medicines (Rx):</div>
+                <ul style={{ paddingLeft: 16, fontSize: 12 }}>
+                  {issuedRx.medicines.map((m, i) => (
+                    <li key={i} style={{ marginBottom: 3 }}>
+                      <strong>{m.name}</strong> - {m.dosage} ({m.frequency}, {m.duration})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>Sent successfully via Twilio</span>
+                <button onClick={() => window.print()} className="btn-secondary" style={{ gap: 4, padding: '6px 12px', fontSize: 11 }}>
+                  <Printer size={12} /> Print Rx
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
