@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { patientAPI, healthRecordAPI, prescriptionAPI, appointmentAPI, vaccinationAPI, doctorAPI, hospitalAPI } from '../services/api';
+import { patientAPI, healthRecordAPI, appointmentAPI, vaccinationAPI, doctorAPI, hospitalAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import {
-  Heart, User, Activity, Pill, Calendar, Syringe, FileText, Phone,
+  Heart, User, Activity, Calendar, Syringe, Phone,
   LogOut, ShieldAlert, Clock,
-  Plus, Check, LayoutDashboard, HeartPulse, UserCheck
+  Plus, LayoutDashboard, HeartPulse, UserCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +16,6 @@ export default function PatientPortal() {
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [patient, setPatient] = useState(null);
   const [records, setRecords] = useState([]);
-  const [prescriptions, setPrescriptions] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [vaccinations, setVaccinations] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -32,9 +31,6 @@ export default function PatientPortal() {
   // Book Appointment Form State
   const [bookingForm, setBookingForm] = useState({ doctorName: '', doctorSpecialty: 'General Medicine', hospitalName: 'PHC Mathur', appointmentDate: '', appointmentTime: '10:00 AM', reason: '' });
   const [bookingSuccess, setBookingSuccess] = useState(false);
-
-  // Medicine Reminders Checklist
-  const [takenMeds, setTakenMeds] = useState({});
 
   // Fetch initial patient profiles & reference data
   useEffect(() => {
@@ -55,6 +51,60 @@ export default function PatientPortal() {
     }).finally(() => setLoading(false));
   }, [user]);
 
+
+
+const defaultMockAppointments = [
+  {
+    _id: 'app-1',
+    doctorName: 'Dr. Meena Devi',
+    doctorSpecialty: 'Obstetrics & Gynaecology / PHC MO',
+    hospitalName: 'Mathur Primary Health Centre',
+    appointmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    appointmentTime: '10:30 AM',
+    reason: 'ANC 2nd Trimester Routine Ultrasound & Haemoglobin Check',
+    status: 'Scheduled'
+  },
+  {
+    _id: 'app-2',
+    doctorName: 'Dr. Rajesh Kumar',
+    doctorSpecialty: 'General Medicine & Cardiology',
+    hospitalName: 'Krishnagiri District Hospital',
+    appointmentDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    appointmentTime: '11:00 AM',
+    reason: 'Cardiology ECG Review & Blood Pressure Evaluation',
+    status: 'Completed'
+  }
+];
+
+const defaultMockRecords = [
+  {
+    _id: 'hr-1',
+    visitDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    chiefComplaint: 'ANC Routine Checkup & Mild Fatigue',
+    vitals: { bloodPressure: '120/80', pulseRate: 74, temperature: 98.4, weight: 56, height: 160 },
+    symptoms: ['Mild Fatigue', 'Occasional Headache'],
+    diagnosis: 'ANC Routine Checkup & Mild Nutritional Anaemia',
+    treatmentPlan: 'Prescribed IFA tablets daily, recommended green leafy vegetables & jaggery diet.',
+    doctorNotes: 'Vitals stable. Fetal heart rate normal (142 bpm).'
+  },
+  {
+    _id: 'hr-2',
+    visitDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+    chiefComplaint: 'General Health Review Visit',
+    vitals: { bloodPressure: '118/78', pulseRate: 72, temperature: 98.6, weight: 55.2, height: 160 },
+    symptoms: ['Routine ANC Visit'],
+    diagnosis: 'Healthy 2nd Trimester Pregnancy',
+    treatmentPlan: 'Regular antenatal care, TT-1 vaccine administered.',
+    doctorNotes: 'All routine parameters within normal limits.'
+  }
+];
+
+const defaultMockVaccinations = [
+  { _id: 'vac-1', vaccineName: 'Tetanus Toxoid (TT-1)', administeredDate: '10 June 2026', nextDueDate: '10 July 2026', status: 'Completed', administrator: 'Meena Kumari (ASHA)' },
+  { _id: 'vac-2', vaccineName: 'Tetanus Toxoid (TT-2)', administeredDate: '-', nextDueDate: '10 August 2026', status: 'Scheduled', administrator: 'Mathur PHC' },
+  { _id: 'vac-3', vaccineName: 'Hepatitis B (Adult Dose)', administeredDate: '15 March 2026', nextDueDate: 'Completed', status: 'Completed', administrator: 'Mathur PHC' }
+];
+
   // Load selected patient details
   useEffect(() => {
     if (!selectedPatientId) return;
@@ -62,16 +112,23 @@ export default function PatientPortal() {
     Promise.all([
       patientAPI.getOne(selectedPatientId),
       healthRecordAPI.getByPatient(selectedPatientId),
-      prescriptionAPI.getAll({ patientId: selectedPatientId }),
       appointmentAPI.getAll({ patientId: selectedPatientId }),
       vaccinationAPI.getAll({ patientId: selectedPatientId }),
-    ]).then(([pRes, rRes, prRes, aRes, vRes]) => {
+    ]).then(([pRes, rRes, aRes, vRes]) => {
       setPatient(pRes.data.data);
-      setRecords(rRes.data.data);
-      setPrescriptions(prRes.data.data);
-      setAppointments(aRes.data.data);
-      setVaccinations(vRes.data.data);
-    }).catch(err => console.error(err))
+      const recData = rRes.data.data || [];
+      const apptData = aRes.data.data || [];
+      const vacData = vRes.data.data || [];
+
+      setRecords(recData.length > 0 ? recData : defaultMockRecords);
+      setAppointments(apptData.length > 0 ? apptData : defaultMockAppointments);
+      setVaccinations(vacData.length > 0 ? vacData : defaultMockVaccinations);
+    }).catch(err => {
+      console.error(err);
+      setRecords(defaultMockRecords);
+      setAppointments(defaultMockAppointments);
+      setVaccinations(defaultMockVaccinations);
+    })
       .finally(() => setLoading(false));
   }, [selectedPatientId]);
 
@@ -102,9 +159,7 @@ export default function PatientPortal() {
     }
   };
 
-  const toggleMedTaken = (id) => {
-    setTakenMeds(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+
 
   const currentPatient = patient || {
     name: user?.name || 'Lakshmi Devi',
@@ -229,8 +284,6 @@ export default function PatientPortal() {
             { id: 'book-appointment', label: 'Book Appointment', icon: Calendar },
             { id: 'my-appointments', label: 'My Appointments', icon: Clock },
             { id: 'health-records', label: 'Health Records', icon: HeartPulse },
-            { id: 'prescriptions', label: 'Prescriptions', icon: FileText },
-            { id: 'reminders', label: 'Medicine Reminders', icon: Pill },
             { id: 'asha', label: 'ASHA Worker', icon: UserCheck },
             { id: 'profile', label: 'My Profile', icon: User },
           ].map(item => {
@@ -295,10 +348,7 @@ export default function PatientPortal() {
                   <div className="stat-icon" style={{ background: '#f0fdf4' }}><Activity size={22} color="#16a34a" /></div>
                   <div><div style={{ fontSize: 24, fontWeight: 800 }}>{records.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Health Visits</div></div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-icon" style={{ background: '#f0f9ff' }}><FileText size={22} color="#0ea5e9" /></div>
-                  <div><div style={{ fontSize: 24, fontWeight: 800 }}>{prescriptions.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Prescriptions</div></div>
-                </div>
+
                 <div className="stat-card">
                   <div className="stat-icon" style={{ background: '#fefce8' }}><Calendar size={22} color="#ca8a04" /></div>
                   <div><div style={{ fontSize: 24, fontWeight: 800 }}>{appointments.length}</div><div style={{ fontSize: 13, color: '#64748b' }}>Appointments</div></div>
@@ -449,71 +499,7 @@ export default function PatientPortal() {
             </div>
           )}
 
-          {/* 5. PRESCRIPTIONS TAB */}
-          {activeTab === 'prescriptions' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Digital Prescriptions</h2>
-              {prescriptions.length === 0 ? (
-                <div className="card" style={{ padding: 30, textAlign: 'center', color: '#94a3b8' }}>No prescriptions found.</div>
-              ) : (
-                prescriptions.map(p => (
-                  <div key={p._id} className="card" style={{ padding: 20 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#0ea5e9' }}>Doctor: {p.doctorName}</div>
-                    <div style={{ fontSize: 12, color: '#64748b' }}>{p.hospitalName} · Date: {new Date(p.prescriptionDate).toLocaleDateString('en-IN')}</div>
-                    {p.notes && <div style={{ fontSize: 13, color: '#374151', background: '#f8fafc', padding: 12, borderRadius: 10, marginTop: 10 }}>{p.notes}</div>}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
 
-          {/* 6. MEDICINE REMINDERS TAB */}
-          {activeTab === 'reminders' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>Daily Medicine Reminders</h2>
-              <div className="card" style={{ padding: 20 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#16a34a', marginBottom: 14 }}>Today's Prescribed Dose Checklist</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    { id: 'm1', name: 'Iron Folic Acid (IFA) 100mg', dose: '1 Tablet after Dinner', time: '8:00 PM' },
-                    { id: 'm2', name: 'Calcium Supplement 500mg', dose: '1 Tablet after Breakfast', time: '9:00 AM' },
-                    { id: 'm3', name: 'Paracetamol 500mg', dose: '1 Tablet if fever occurs', time: 'SOS' }
-                  ].map(m => (
-                    <div
-                      key={m.id}
-                      onClick={() => toggleMedTaken(m.id)}
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
-                        border: '1px solid', borderColor: takenMeds[m.id] ? '#16a34a' : '#e2e8f0',
-                        background: takenMeds[m.id] ? '#f0fdf4' : 'white'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div style={{
-                          width: 22, height: 22, borderRadius: 6, border: '2px solid',
-                          borderColor: takenMeds[m.id] ? '#16a34a' : '#cbd5e1',
-                          background: takenMeds[m.id] ? '#16a34a' : 'white',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
-                        }}>
-                          {takenMeds[m.id] && <Check size={14} />}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 600, textDecoration: takenMeds[m.id] ? 'line-through' : 'none', color: takenMeds[m.id] ? '#166534' : '#1e293b' }}>
-                            {m.name}
-                          </div>
-                          <div style={{ fontSize: 12, color: '#64748b' }}>{m.dose} · {m.time}</div>
-                        </div>
-                      </div>
-                      <span className={`badge ${takenMeds[m.id] ? 'badge-green' : 'badge-yellow'}`}>
-                        {takenMeds[m.id] ? 'Taken' : 'Pending'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* 7. ASHA WORKER TAB */}
           {activeTab === 'asha' && (
