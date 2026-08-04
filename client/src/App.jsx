@@ -72,11 +72,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Navigate to="/ashalogin" replace />} />
-      <Route path="/ashalogin" element={user ? <Navigate to={defaultRoute} /> : <LoginPage role="asha_worker" />} />
-      <Route path="/ASHAlogin" element={user ? <Navigate to={defaultRoute} /> : <LoginPage role="asha_worker" />} />
-      <Route path="/patientlogin" element={user ? <Navigate to={defaultRoute} /> : <LoginPage role="patient" />} />
-      <Route path="/adminlogin" element={user ? <Navigate to={defaultRoute} /> : <LoginPage role="admin" />} />
+      <Route path="/login" element={user ? <Navigate to={defaultRoute} /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to={defaultRoute} /> : <RegisterPage />} />
       <Route path="/" element={<Navigate to={defaultRoute} />} />
 
