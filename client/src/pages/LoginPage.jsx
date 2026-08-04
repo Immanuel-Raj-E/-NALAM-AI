@@ -3,14 +3,50 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Mail, Lock, Eye, EyeOff, AlertCircle, UserCheck, Shield, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function LoginPage() {
-  const [roleTab, setRoleTab] = useState('asha_worker'); // asha_worker | patient | admin
-  const [formData, setFormData] = useState({ email: 'meena@nalamhealth.in', password: 'asha1234' });
+export default function LoginPage({ role: propRole }) {
+  const defaultEmail = propRole === 'admin'
+    ? 'admin@nalamhealth.in'
+    : propRole === 'patient'
+      ? 'lakshmi@nalamhealth.in'
+      : 'meena@nalamhealth.in';
+
+  const defaultPassword = propRole === 'admin'
+    ? 'admin123'
+    : propRole === 'patient'
+      ? 'patient123'
+      : 'asha1234';
+
+  const [roleTab, setRoleTab] = useState(propRole || 'asha_worker');
+  const [formData, setFormData] = useState({ email: defaultEmail, password: defaultPassword });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const getBackgroundGradient = () => {
+    if (roleTab === 'admin') return 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #3b0764 100%)';
+    if (roleTab === 'patient') return 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0c3e5d 100%)';
+    return 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f4c25 100%)';
+  };
+
+  const getDecorationColors = () => {
+    if (roleTab === 'admin') return { bubble1: 'rgba(124,58,237,0.08)', bubble2: 'rgba(139,92,246,0.06)' };
+    if (roleTab === 'patient') return { bubble1: 'rgba(14,165,233,0.08)', bubble2: 'rgba(56,189,248,0.06)' };
+    return { bubble1: 'rgba(22,163,74,0.08)', bubble2: 'rgba(34,197,94,0.06)' };
+  };
+
+  const getLogoBackground = () => {
+    if (roleTab === 'admin') return 'linear-gradient(135deg, #7c3aed, #8b5cf6)';
+    if (roleTab === 'patient') return 'linear-gradient(135deg, #0ea5e9, #38bdf8)';
+    return 'linear-gradient(135deg, #16a34a, #22c55e)';
+  };
+
+  const getLogoShadow = () => {
+    if (roleTab === 'admin') return '0 8px 30px rgba(124,58,237,0.4)';
+    if (roleTab === 'patient') return '0 8px 30px rgba(14,165,233,0.4)';
+    return '0 8px 30px rgba(22,163,74,0.4)';
+  };
 
   const handleRoleTabChange = (role) => {
     setRoleTab(role);
@@ -44,16 +80,18 @@ export default function LoginPage() {
     }
   };
 
+  const decColors = getDecorationColors();
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f4c25 100%)',
+      background: getBackgroundGradient(),
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
     }}>
       {/* Background decoration */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(22,163,74,0.08)' }} />
-        <div style={{ position: 'absolute', bottom: -150, left: -100, width: 500, height: 500, borderRadius: '50%', background: 'rgba(14,165,233,0.06)' }} />
+        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: decColors.bubble1 }} />
+        <div style={{ position: 'absolute', bottom: -150, left: -100, width: 500, height: 500, borderRadius: '50%', background: decColors.bubble2 }} />
       </div>
 
       <div style={{ width: '100%', maxWidth: 480, position: 'relative', zIndex: 1 }}>
@@ -61,9 +99,9 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             width: 64, height: 64, borderRadius: 20,
-            background: 'linear-gradient(135deg, #16a34a, #22c55e)',
+            background: getLogoBackground(),
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 16, boxShadow: '0 8px 30px rgba(22,163,74,0.4)'
+            marginBottom: 16, boxShadow: getLogoShadow()
           }}>
             <Heart size={36} color="white" fill="white" />
           </div>
@@ -74,54 +112,56 @@ export default function LoginPage() {
         {/* Card Container */}
         <div className="card" style={{ padding: 32, background: 'white', borderRadius: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
           
-          {/* Role Switcher Tabs */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6, padding: 4, background: '#f1f5f9', borderRadius: 14, marginBottom: 24 }}>
-            <button
-              type="button"
-              onClick={() => handleRoleTabChange('asha_worker')}
-              style={{
-                padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: roleTab === 'asha_worker' ? 'white' : 'transparent',
-                color: roleTab === 'asha_worker' ? '#16a34a' : '#64748b',
-                fontWeight: roleTab === 'asha_worker' ? 700 : 500, fontSize: 12,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                boxShadow: roleTab === 'asha_worker' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <UserCheck size={14} /> ASHA Worker
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleTabChange('patient')}
-              style={{
-                padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: roleTab === 'patient' ? 'white' : 'transparent',
-                color: roleTab === 'patient' ? '#0ea5e9' : '#64748b',
-                fontWeight: roleTab === 'patient' ? 700 : 500, fontSize: 12,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                boxShadow: roleTab === 'patient' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <User size={14} /> Patient
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleTabChange('admin')}
-              style={{
-                padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: roleTab === 'admin' ? 'white' : 'transparent',
-                color: roleTab === 'admin' ? '#7c3aed' : '#64748b',
-                fontWeight: roleTab === 'admin' ? 700 : 500, fontSize: 12,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                boxShadow: roleTab === 'admin' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <Shield size={14} /> Admin
-            </button>
-          </div>
+          {/* Role Switcher Tabs (Only shown if generic login page) */}
+          {!propRole && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6, padding: 4, background: '#f1f5f9', borderRadius: 14, marginBottom: 24 }}>
+              <button
+                type="button"
+                onClick={() => handleRoleTabChange('asha_worker')}
+                style={{
+                  padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  background: roleTab === 'asha_worker' ? 'white' : 'transparent',
+                  color: roleTab === 'asha_worker' ? '#16a34a' : '#64748b',
+                  fontWeight: roleTab === 'asha_worker' ? 700 : 500, fontSize: 12,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                  boxShadow: roleTab === 'asha_worker' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <UserCheck size={14} /> ASHA Worker
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleTabChange('patient')}
+                style={{
+                  padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  background: roleTab === 'patient' ? 'white' : 'transparent',
+                  color: roleTab === 'patient' ? '#0ea5e9' : '#64748b',
+                  fontWeight: roleTab === 'patient' ? 700 : 500, fontSize: 12,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                  boxShadow: roleTab === 'patient' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <User size={14} /> Patient
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleTabChange('admin')}
+                style={{
+                  padding: '9px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  background: roleTab === 'admin' ? 'white' : 'transparent',
+                  color: roleTab === 'admin' ? '#7c3aed' : '#64748b',
+                  fontWeight: roleTab === 'admin' ? 700 : 500, fontSize: 12,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                  boxShadow: roleTab === 'admin' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Shield size={14} /> Admin
+              </button>
+            </div>
+          )}
 
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>
             Sign in to {roleTab === 'asha_worker' ? 'ASHA Portal' : roleTab === 'patient' ? 'Patient Care' : 'Admin Control Center'}
