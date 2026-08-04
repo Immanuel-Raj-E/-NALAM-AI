@@ -156,6 +156,48 @@ const seedData = async () => {
       temperature: '98.6°F',
       weight: '58 kg',
       followUpDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+    },
+    {
+      patient: patients[3]._id,
+      ashaWorker: ashaWorker._id,
+      visitDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      chiefComplaint: 'Growth monitoring & general checkup',
+      symptoms: ['Underweight', 'Loss of Appetite'],
+      diagnosis: 'Mild Pediatric Malnutrition',
+      medicines: [{ name: 'Vitamin D3 Drops', dosage: '5 drops', duration: '30 days', frequency: 'Once daily' }],
+      doctorNotes: 'Child is active but slightly underweight for age. Prescribed vitamin supplements and advised nutritious diet chart.',
+      bloodPressure: '90/60',
+      temperature: '98.2°F',
+      weight: '22 kg',
+      followUpDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    },
+    {
+      patient: patients[7]._id,
+      ashaWorker: ashaWorker._id,
+      visitDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      chiefComplaint: 'Severe cough and breathing distress',
+      symptoms: ['Chronic Cough', 'Dyspnoea', 'Fatigue'],
+      diagnosis: 'Chronic Obstructive Pulmonary Disease (COPD) Exacerbation',
+      medicines: [{ name: 'Salbutamol Inhaler', dosage: '2 puffs', duration: '30 days', frequency: 'Three times daily' }],
+      doctorNotes: 'Patient has long smoking history. Advice on smoking cessation and correct inhaler technique given.',
+      bloodPressure: '135/85',
+      temperature: '98.5°F',
+      weight: '60 kg',
+      followUpDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+    {
+      patient: patients[9]._id,
+      ashaWorker: ashaWorker._id,
+      visitDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+      chiefComplaint: 'Persistent evening fever and hemoptysis',
+      symptoms: ['Fever', 'Cough with blood', 'Weight loss'],
+      diagnosis: 'Pulmonary Tuberculosis (Active)',
+      medicines: [{ name: 'Amoxicillin 250mg', dosage: '1 capsule', duration: '7 days', frequency: 'Thrice daily' }],
+      doctorNotes: 'Initiating DOTS Regimen immediately. Weekly weight monitoring required.',
+      bloodPressure: '110/70',
+      temperature: '100.2°F',
+      weight: '48 kg',
+      followUpDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     }
   ]);
   console.log('🩺 Health Records created');
@@ -188,6 +230,33 @@ const seedData = async () => {
       prescriptionDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
       notes: 'DOTS Regimen Category 1: 4FDC (Rifampicin, Isoniazid, Pyrazinamide, Ethambutol) daily under ASHA supervision.',
       ocrText: 'KRISHNAGIRI GH - RNTCP TB CLINIC\nPatient: Senthil Pandi (38Y/M)\nRegimen: Category 1 DOTS 4FDC 3 tablets daily under ASHA surveillance.',
+    },
+    {
+      patient: patients[2]._id,
+      ashaWorker: ashaWorker._id,
+      doctorName: 'Dr. Priya Rajan',
+      hospitalName: 'Krishnagiri Government Hospital',
+      prescriptionDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      notes: 'Salbutamol Inhaler 2 puffs SOS for asthma exacerbation. Avoid dust and cold allergens.',
+      ocrText: 'KRISHNAGIRI GH - OUTPATIENT SERVICES\nPatient: Kavitha Raj (35Y/F)\nRx:\n1. Salbutamol Inhaler 100mcg - 2 puffs SOS\nSd/- Dr. Priya Rajan',
+    },
+    {
+      patient: patients[3]._id,
+      ashaWorker: ashaWorker._id,
+      doctorName: 'Dr. Meena Devi',
+      hospitalName: 'PHC Mathur',
+      prescriptionDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+      notes: 'Multivitamin Syrup 5ml once daily after breakfast. Focus on dietary protein and milk.',
+      ocrText: 'PHC MATHUR - PEDIATRICS\nPatient: Arjun Kumar (8Y/M)\nRx:\n1. Syrup Multivitamin 1 bottle - 5ml OD\nSd/- Dr. Meena Devi',
+    },
+    {
+      patient: patients[7]._id,
+      ashaWorker: ashaWorker._id,
+      doctorName: 'Dr. Rajesh Babu',
+      hospitalName: 'Krishnagiri Government Hospital',
+      prescriptionDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      notes: 'Salbutamol Inhaler 2 puffs TDS (three times daily) for COPD. Tab Paracetamol 500mg 1 tablet SOS for headache.',
+      ocrText: 'KRISHNAGIRI GOVERNMENT HOSPITAL\nPatient: Gopal Naidu (70Y/M)\nRx:\n1. Salbutamol Inhaler - 2 puffs TDS\n2. Tab Paracetamol 500mg - 1 SOS\nSd/- Dr. Rajesh Babu',
     }
   ]);
   console.log('📋 Prescriptions created');
@@ -222,6 +291,35 @@ const seedData = async () => {
       ],
       aiSummary: 'Significantly elevated glucose parameters indicating uncontrolled Type 2 Diabetes (HbA1c 8.9%). Kidney function normal.',
       importantFindings: ['Uncontrolled Type 2 Diabetes (HbA1c 8.9%)', 'Strict dietary regulation & regular anti-diabetic medication required']
+    },
+    {
+      patient: patients[7]._id,
+      ashaWorker: ashaWorker._id,
+      reportName: 'Lipid Profile Report',
+      reportType: 'Blood Test',
+      reportDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      ocrText: 'KRISHNAGIRI GOVERNMENT PHC LAB\nPATIENT: Gopal Naidu (70/M)\nTotal Cholesterol: 245 mg/dL (Normal: < 200)\nTriglycerides: 190 mg/dL (Normal: < 150)\nHDL Cholesterol: 38 mg/dL (Normal: > 40)\nLDL Cholesterol: 169 mg/dL (Normal: < 100)',
+      abnormalValues: [
+        { parameter: 'Total Cholesterol', value: '245 mg/dL', normalRange: '< 200', status: 'High' },
+        { parameter: 'Triglycerides', value: '190 mg/dL', normalRange: '< 150', status: 'High' },
+        { parameter: 'LDL Cholesterol', value: '169 mg/dL', normalRange: '< 100', status: 'High' },
+        { parameter: 'HDL Cholesterol', value: '38 mg/dL', normalRange: '> 40', status: 'Low' }
+      ],
+      aiSummary: 'Hyperlipidemia detected. LDL and Total Cholesterol are significantly elevated. Advised low fat diet and cardiovascular risk evaluation.',
+      importantFindings: ['High LDL (Bad Cholesterol)', 'High risk for cardiovascular conditions']
+    },
+    {
+      patient: patients[9]._id,
+      ashaWorker: ashaWorker._id,
+      reportName: 'Sputum Smear Microscopy for Acid Fast Bacilli (AFB)',
+      reportType: 'Other',
+      reportDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      ocrText: 'MATHUR PHC MICROBIOLOGY DEPT\nPATIENT: Senthil Pandi (38/M)\nSpecimen: Sputum (Morning sample)\nAFB Stain Result: Positive (2+)\nZ-N Staining: Acid Fast Bacilli observed under high-power field microscopy.',
+      abnormalValues: [
+        { parameter: 'AFB Stain Result', value: 'Positive (2+)', normalRange: 'Negative', status: 'High' }
+      ],
+      aiSummary: 'Sputum smear positive for AFB (2+). Confirms active Pulmonary Tuberculosis infection. RNTCP guidelines suggest starting DOTS regimen immediately.',
+      importantFindings: ['Active TB infection confirmed', 'ASHA Worker must ensure DOTS medicine adherence monitoring']
     }
   ]);
   console.log('🔬 Medical Reports created');
@@ -233,6 +331,9 @@ const seedData = async () => {
     { patient: patients[2]._id, doctorName: 'Dr. Priya Rajan', doctorSpecialty: 'General Medicine', hospitalName: 'Krishnagiri Government Hospital', appointmentDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), appointmentTime: '11:00 AM', reason: 'Asthma Review', status: 'Scheduled', isReferral: false },
     { patient: patients[4]._id, doctorName: 'Dr. Rajesh Babu', doctorSpecialty: 'Orthopedics', hospitalName: 'Krishnagiri Government Hospital', appointmentDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), appointmentTime: '2:00 PM', reason: 'Arthritis Pain Management', status: 'Scheduled', isReferral: false },
     { patient: patients[9]._id, doctorName: 'Dr. Priya Rajan', doctorSpecialty: 'General Medicine', hospitalName: 'Krishnagiri Government Hospital', appointmentDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), appointmentTime: '9:30 AM', reason: 'TB Follow-up', status: 'Completed', isReferral: false },
+    { patient: patients[0]._id, doctorName: 'Dr. Meena Devi', doctorSpecialty: 'Gynecology & Obstetrics', hospitalName: 'PHC Mathur', appointmentDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), appointmentTime: '10:00 AM', reason: 'Routine Antenatal Visit', status: 'Completed', isReferral: false },
+    { patient: patients[3]._id, doctorName: 'Dr. Meena Devi', doctorSpecialty: 'Pediatrics / MO', hospitalName: 'PHC Mathur', appointmentDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), appointmentTime: '11:30 AM', reason: 'Nutrition & Growth Evaluation', status: 'Scheduled', isReferral: false },
+    { patient: patients[7]._id, doctorName: 'Dr. Rajesh Babu', doctorSpecialty: 'General Medicine', hospitalName: 'Krishnagiri Government Hospital', appointmentDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), appointmentTime: '11:00 AM', reason: 'COPD Inhaler Review', status: 'Scheduled', isReferral: false }
   ];
 
   await Appointment.insertMany(appointmentsData.map(a => ({ ...a, ashaWorker: ashaWorker._id })));
@@ -262,6 +363,9 @@ const seedData = async () => {
     { patient: patients[3]._id, vaccineName: 'BCG', vaccineType: 'Live Attenuated', doseNumber: 1, scheduledDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), administeredDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), status: 'Completed', administeredBy: 'PHC Staff', location: 'PHC Mathur' },
     { patient: patients[3]._id, vaccineName: 'MMR', vaccineType: 'Live Attenuated', doseNumber: 1, scheduledDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), status: 'Overdue' },
     { patient: patients[6]._id, vaccineName: 'COVID-19 Booster', vaccineType: 'mRNA', doseNumber: 3, scheduledDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), status: 'Pending' },
+    { patient: patients[3]._id, vaccineName: 'OPV (Polio Drops)', vaccineType: 'Oral Attenuated', doseNumber: 3, scheduledDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), administeredDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), status: 'Completed', administeredBy: 'Meena Kumari', location: 'Mathur Village' },
+    { patient: patients[3]._id, vaccineName: 'Pentavalent Vaccine', vaccineType: 'Combined', doseNumber: 3, scheduledDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), administeredDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), status: 'Completed', administeredBy: 'PHC Nurse', location: 'PHC Mathur' },
+    { patient: patients[8]._id, vaccineName: 'Tetanus Toxoid (TT)', vaccineType: 'Toxoid', doseNumber: 1, scheduledDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), status: 'Pending' }
   ];
 
   await Vaccination.insertMany(vaccinationsData.map(v => ({ ...v, ashaWorker: ashaWorker._id })));
@@ -273,6 +377,8 @@ const seedData = async () => {
     { patient: patients[1]._id, type: 'Appointment', title: 'Cardiology Appointment - Ramu', message: 'Patient appointment with Dr. Arun Prakash in 5 days', reminderDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), reminderTime: '8:00 AM', priority: 'High' },
     { patient: patients[3]._id, type: 'Vaccination', title: 'MMR Vaccine Due - Arjun', message: 'Child is overdue for MMR vaccine. Schedule immediately.', reminderDate: new Date(Date.now() + 0 * 24 * 60 * 60 * 1000), reminderTime: '10:00 AM', priority: 'High' },
     { patient: patients[9]._id, type: 'Follow-up', title: 'TB Follow-up - Senthil', message: 'Monthly DOTS follow-up visit required', reminderDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), reminderTime: '11:00 AM', priority: 'High' },
+    { patient: patients[2]._id, type: 'Medicine', title: 'Asthma Inhaler Check - Kavitha', message: 'ASHA home visit to check correct inhaler usage compliance', reminderDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), reminderTime: '4:00 PM', priority: 'Medium' },
+    { patient: patients[7]._id, type: 'Follow-up', title: 'COPD Spirometry - Gopal', message: 'Schedule breathing function test at district GH', reminderDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), reminderTime: '10:00 AM', priority: 'Medium' }
   ];
 
   await Reminder.insertMany(remindersData.map(r => ({ ...r, ashaWorker: ashaWorker._id })));
