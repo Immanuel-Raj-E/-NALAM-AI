@@ -155,10 +155,10 @@ const sendPrescriptionWhatsapp = async (req, res, next) => {
     const { sendPrescriptionNotification } = require('../services/twilioService');
     const twilioRes = await sendPrescriptionNotification(patientObj, prescription);
 
-    if (twilioRes.success) {
+    if (twilioRes && twilioRes.success) {
       res.json({ success: true, message: 'WhatsApp notification sent successfully', sid: twilioRes.sid });
     } else {
-      res.status(500).json({ success: false, message: twilioRes.error || 'Failed to send WhatsApp notification' });
+      res.status(500).json({ success: false, message: twilioRes?.error || 'Failed to send WhatsApp notification' });
     }
   } catch (error) {
     next(error);

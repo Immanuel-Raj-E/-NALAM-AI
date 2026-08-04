@@ -10,14 +10,14 @@ const fromNumber = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886';
 const sendPrescriptionNotification = async (patientObj, prescriptionObj) => {
   if (!accountSid || !authToken) {
     console.warn('⚠️ Twilio credentials are not fully configured in environment variables.');
-    return;
+    return { success: false, error: 'Twilio credentials not configured' };
   }
 
   // Format the to phone number
   let rawPhone = String(patientObj.phone || '').replace(/\s+/g, '');
   if (!rawPhone) {
     console.warn(`⚠️ Patient ${patientObj.name} has no phone number. Skipping notification.`);
-    return;
+    return { success: false, error: 'Patient has no phone number' };
   }
 
   // Format destination number for WhatsApp Sandbox
