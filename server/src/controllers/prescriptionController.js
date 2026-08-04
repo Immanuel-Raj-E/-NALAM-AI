@@ -1,5 +1,6 @@
 const Prescription = require('../models/Prescription');
 const Medicine = require('../models/Medicine');
+const Patient = require('../models/Patient');
 const { extractTextFromFile } = require('../services/ocrService');
 
 const getPrescriptions = async (req, res, next) => {
@@ -56,6 +57,19 @@ const createPrescription = async (req, res, next) => {
       fileName,
       ocrText,
     });
+
+    // ==================== SEND TWILIO WHATSAPP NOTIFICATION ====================
+    try {
+      const patientObj = await Patient.findById(patient);
+      if (patientObj && patientObj.phone) {
+        const { sendPrescriptionNotification } = require('../services/twilioService');
+        sendPrescriptionNotification(patientObj, prescription).catch(err => {
+          console.error('⚠️ Twilio Notification background failure:', err.message);
+        });
+      }
+    } catch (twilioErr) {
+      console.error('⚠️ Twilio Notification Error (non-blocking):', twilioErr.message);
+    }
 
     // ==================== AUTOMATIC STOCK DEDUCTION IN DATABASE ====================
     if (extractedMedicines && Array.isArray(extractedMedicines) && extractedMedicines.length > 0) {

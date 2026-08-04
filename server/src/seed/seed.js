@@ -76,7 +76,7 @@ const seedData = async () => {
       email: 'lakshmi@nalamhealth.in',
       password: 'patient123',
       role: 'patient',
-      phone: '9876501001',
+      phone: '6374306286',
       village: 'Mathur',
       district: 'Krishnagiri',
       state: 'Tamil Nadu',
@@ -96,7 +96,7 @@ const seedData = async () => {
 
   // Create sample patients
   const patientsData = [
-    { name: 'Lakshmi Devi', age: 28, gender: 'Female', phone: '9876501001', address: '12, Main Street', village: 'Mathur', district: 'Krishnagiri', bloodGroup: 'O+', medicalConditions: ['Anaemia', 'Pregnancy'], allergies: ['Penicillin'], riskLevel: 'High', pregnancyStatus: 'Pregnant', lastVisitDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
+    { name: 'Lakshmi Devi', age: 28, gender: 'Female', phone: '6374306286', address: '12, Main Street', village: 'Mathur', district: 'Krishnagiri', bloodGroup: 'O+', medicalConditions: ['Anaemia', 'Pregnancy'], allergies: ['Penicillin'], riskLevel: 'High', pregnancyStatus: 'Pregnant', lastVisitDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
     { name: 'Ramu Selvam', age: 52, gender: 'Male', phone: '9876501002', address: '45, Cross Street', village: 'Veppanapalli', district: 'Krishnagiri', bloodGroup: 'B+', medicalConditions: ['Hypertension', 'Diabetes'], allergies: [], riskLevel: 'High', lastVisitDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) },
     { name: 'Kavitha Raj', age: 35, gender: 'Female', phone: '9876501003', address: '78, Temple Road', village: 'Bargur', district: 'Krishnagiri', bloodGroup: 'A+', medicalConditions: ['Asthma'], allergies: ['Aspirin'], riskLevel: 'Medium', lastVisitDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) },
     { name: 'Arjun Kumar', age: 8, gender: 'Male', phone: '9876501004', address: '23, North Street', village: 'Mathur', district: 'Krishnagiri', bloodGroup: 'AB+', medicalConditions: ['Malnutrition'], allergies: [], riskLevel: 'Medium', lastVisitDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) },
